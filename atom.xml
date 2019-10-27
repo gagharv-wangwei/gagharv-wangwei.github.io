@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://gagharv-wangwei.github.io/"/>
-  <updated>2019-03-29T15:12:50.028Z</updated>
+  <updated>2019-10-27T09:17:14.102Z</updated>
   <id>http://gagharv-wangwei.github.io/</id>
   
   <author>
@@ -17,11 +17,41 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>RocketMQ NameServer</title>
+    <link href="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/"/>
+    <id>http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/</id>
+    <published>2019-10-21T01:48:37.000Z</published>
+    <updated>2019-10-27T09:17:14.102Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol><li>Brokers 定期更新metadata</li><li>提供客户端(包含生产者，消费者) 最新路由信息</li></ol><h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><blockquote><p>NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件</p></blockquote><h3 id="KVConfigManager"><a href="#KVConfigManager" class="headerlink" title="KVConfigManager"></a>KVConfigManager</h3><p>kv键值对管理 ,内部维护一个HashMap支持数据持久化到文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String<span class="comment">/* Namespace */</span>, HashMap&lt;String<span class="comment">/* Key */</span>, String<span class="comment">/* Value */</span>&gt;&gt; configTable =</span><br><span class="line">    <span class="keyword">new</span> HashMap&lt;String, HashMap&lt;String, String&gt;&gt;();</span><br></pre></td></tr></table></figure></p><h3 id="RouteInfoManager"><a href="#RouteInfoManager" class="headerlink" title="RouteInfoManager"></a>RouteInfoManager</h3><p>存储broker列表，topic信息，通过注册<code>BrokerHousekeepingService</code>到netty 处理链上处理对应连接关闭、Idle事件</p><h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><blockquote><p>NamesrvStartup.main()</p></blockquote><ol><li>创建 NamesrvController ，传入 NamesrvConfig、NettyServerConfig</li><li>controller.initialize() <ul><li>kvConfigManager 加载配置</li><li>NettyRemotingServer 初始化</li><li>注册netty处理逻辑</li><li>开启间隔10s的定时任务 调用<code>routeInfoManager</code>扫描不可用的broker 关闭channel</li><li>开启间隔10s的定时任务 调用<code>kvConfigManager</code>打印配置信息</li><li>ssl模式下对文件ssl文件监控，变化则调用<code>reloadServerSslContext()</code>刷新Sslcontext</li></ul></li><li>controller.start()<ul><li><code>NettyRemotingServer</code> start()</li><li>ssl模式文件监控开启</li></ul></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;功能&quot;&gt;&lt;a href=&quot;#功能&quot; class=&quot;headerlink&quot; title=&quot;功能&quot;&gt;&lt;/a&gt;功能&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;Brokers 定期更新metadata&lt;/li&gt;
+&lt;li&gt;提供客户端(包含生产者，消费者) 最新路由信息&lt;/li&gt;
+&lt;/ol&gt;
+      
+    
+    </summary>
+    
+      <category term="消息队列" scheme="http://gagharv-wangwei.github.io/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+      <category term="rocketmq" scheme="http://gagharv-wangwei.github.io/tags/rocketmq/"/>
+    
+      <category term="源码学习" scheme="http://gagharv-wangwei.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Spark学习 RPC</title>
-    <link href="http://gagharv-wangwei.github.io/2019/03/18/Spark%E6%BA%90%E7%A0%81/"/>
-    <id>http://gagharv-wangwei.github.io/2019/03/18/Spark源码/</id>
+    <link href="http://gagharv-wangwei.github.io/2019/03/18/Spark%E5%AD%A6%E4%B9%A0-RPC/"/>
+    <id>http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/</id>
     <published>2019-03-18T13:54:24.000Z</published>
-    <updated>2019-03-29T15:12:50.028Z</updated>
+    <updated>2019-10-27T09:09:33.838Z</updated>
     
     <content type="html"><![CDATA[<p>包含spark-network-common模块和spark-core中rpc部分</p><h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark-total.png" alt="spark各组件图"></p><hr><h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p><ul><li>TransportConf<br>配置文件</li><li>RpcHandler<br>处理请求的netty handler<br>用于TransportClientFactory 创建TransportClient时调用initializePipeline方法包装成 TransportChannelHandler，TransportChannelHandler内部调用RpcHandler处理请求</li></ul><h3 id="TransportClientFactory"><a href="#TransportClientFactory" class="headerlink" title="TransportClientFactory"></a>TransportClientFactory</h3><p>用于创建客户端连接的工厂类<br><code>createClient()</code> 方法用于创建nio客户端，并生成持有客户端Channel的TransportClient</p><p>通过内部的<code>ClientPool</code>维护<code>TransportClient</code>数组<br>通过传入的<code>TransportContext</code>和<code>TransportClientBootstrap</code>创建<code>TransportClient</code>，均用于通过netty pipeline绑定 RpcHandler 、身份验证</p><h3 id="TransportServer"><a href="#TransportServer" class="headerlink" title="TransportServer"></a>TransportServer</h3><p>服务器端<br>启动一个netty服务,类似<code>TransportClientFactory</code>当建立连接后创建一个<code>TransportClient</code>用于处理后续操作</p><h3 id="TransportClient"><a href="#TransportClient" class="headerlink" title="TransportClient"></a>TransportClient</h3><p>通过持有对应连接<code>Channel</code>用于客户端服务端间消息发送</p><hr><h2 id="Spark-core-中RPC部分"><a href="#Spark-core-中RPC部分" class="headerlink" title="Spark-core 中RPC部分"></a>Spark-core 中RPC部分</h2><p>spark-core中的部分用于替换之前的akka。类似akka的actor模型</p><h3 id="RpcEndpoint"><a href="#RpcEndpoint" class="headerlink" title="RpcEndpoint"></a>RpcEndpoint</h3><p>代表具体的通信节点</p><h3 id="RpcEndPointRef"><a href="#RpcEndPointRef" class="headerlink" title="RpcEndPointRef"></a>RpcEndPointRef</h3><p>是对远程RpcEndpoint的一个引用，参考akka中actor模型设计</p><h3 id="RpcEnv"><a href="#RpcEnv" class="headerlink" title="RpcEnv"></a>RpcEnv</h3><p>作为rpc的环境 <code>RpcEndpoint</code> 注册到该对象上<br>通过 <code>new NettyRpcEnvFactory().create(config)</code> 创建具体的实现类<code>NettyRpcEnv</code></p><hr><h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><h3 id="1-StreamManager"><a href="#1-StreamManager" class="headerlink" title="1.StreamManager"></a>1.StreamManager</h3><p><code>NettyStreamManager</code> 用于提供NettyRpcEnv的文件流服务，可注册 文件、jar包和目录 三种资源，可以用来处理StreamRequest类型的消息</p><hr><h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p><h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark-client.png" alt="client处理流程图"></p><p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p><p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>]]></content>
     
@@ -39,6 +69,8 @@
     
     
       <category term="spark" scheme="http://gagharv-wangwei.github.io/tags/spark/"/>
+    
+      <category term="源码学习" scheme="http://gagharv-wangwei.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"/>
     
   </entry>
   

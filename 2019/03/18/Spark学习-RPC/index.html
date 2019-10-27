@@ -96,16 +96,22 @@
 
 
 
-  <meta name="description" content="写着玩">
-<meta property="og:type" content="website">
-<meta property="og:title" content="gagharv">
-<meta property="og:url" content="http://gagharv-wangwei.github.io/index.html">
+  <meta name="description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
+<meta name="keywords" content="spark,源码学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark学习 RPC">
+<meta property="og:url" content="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/index.html">
 <meta property="og:site_name" content="gagharv">
-<meta property="og:description" content="写着玩">
+<meta property="og:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-total.png">
+<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-server.png">
+<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-client.png">
+<meta property="og:updated_time" content="2019-10-27T09:09:33.838Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="gagharv">
-<meta name="twitter:description" content="写着玩">
+<meta name="twitter:title" content="Spark学习 RPC">
+<meta name="twitter:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
+<meta name="twitter:image" content="http://gagharv-wangwei.github.io/images/spark-total.png">
 
 
 
@@ -114,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://gagharv-wangwei.github.io/">
+  <link rel="canonical" href="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/">
 
 
 
@@ -124,7 +130,7 @@
   };
 </script>
 
-  <title>gagharv</title>
+  <title>Spark学习 RPC | gagharv</title>
   
 
 
@@ -172,8 +178,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -211,7 +216,7 @@
         
         
           
-          <li class="menu-item menu-item-home menu-item-active">
+          <li class="menu-item menu-item-home">
 
     
     
@@ -307,210 +312,9 @@
           
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="wang wei">
-      <meta itemprop="description" content="写着玩">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="gagharv">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/21/rocketmq-nameserver/" class="post-title-link" itemprop="url">RocketMQ NameServer</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-10-21 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-21T09:48:37+08:00">2019-10-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-27 17:17:14" itemprop="dateModified" datetime="2019-10-27T17:17:14+08:00">2019-10-27</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/消息队列/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol>
-<li>Brokers 定期更新metadata</li>
-<li>提供客户端(包含生产者，消费者) 最新路由信息</li>
-</ol>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><blockquote>
-<p>NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件</p>
-</blockquote>
-<h3 id="KVConfigManager"><a href="#KVConfigManager" class="headerlink" title="KVConfigManager"></a>KVConfigManager</h3><p>kv键值对管理 ,内部维护一个HashMap支持数据持久化到文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String<span class="comment">/* Namespace */</span>, HashMap&lt;String<span class="comment">/* Key */</span>, String<span class="comment">/* Value */</span>&gt;&gt; configTable =</span><br><span class="line">    <span class="keyword">new</span> HashMap&lt;String, HashMap&lt;String, String&gt;&gt;();</span><br></pre></td></tr></table></figure></p>
-<h3 id="RouteInfoManager"><a href="#RouteInfoManager" class="headerlink" title="RouteInfoManager"></a>RouteInfoManager</h3><p>存储broker列表，topic信息，通过注册<code>BrokerHousekeepingService</code>到netty 处理链上处理对应连接关闭、Idle事件</p>
-<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><blockquote>
-<p>NamesrvStartup.main()</p>
-</blockquote>
-<ol>
-<li>创建 NamesrvController ，传入 NamesrvConfig、NettyServerConfig</li>
-<li>controller.initialize() <ul>
-<li>kvConfigManager 加载配置</li>
-<li>NettyRemotingServer 初始化</li>
-<li>注册netty处理逻辑</li>
-<li>开启间隔10s的定时任务 调用<code>routeInfoManager</code>扫描不可用的broker 关闭channel</li>
-<li>开启间隔10s的定时任务 调用<code>kvConfigManager</code>打印配置信息</li>
-<li>ssl模式下对文件ssl文件监控，变化则调用<code>reloadServerSslContext()</code>刷新Sslcontext</li>
-</ul>
-</li>
-<li>controller.start()<ul>
-<li><code>NettyRemotingServer</code> start()</li>
-<li>ssl模式文件监控开启</li>
-</ul>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -542,10 +346,8 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/18/Spark学习-RPC/" class="post-title-link" itemprop="url">Spark学习 RPC</a>
+          <h1 class="post-title" itemprop="name headline">Spark学习 RPC
+
               
             
           </h1>
@@ -639,9 +441,7 @@
       
 
       
-        
-          
-            <p>包含spark-network-common模块和spark-core中rpc部分</p>
+        <p>包含spark-network-common模块和spark-core中rpc部分</p>
 <h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark-total.png" alt="spark各组件图"></p>
 <hr>
 <h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p>
@@ -666,8 +466,6 @@
 <p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p>
 <p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>
 
-          
-        
       
     </div>
 
@@ -688,14 +486,38 @@
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/spark/" rel="tag"><i class="fa fa-tag"></i> spark</a>
+          
+            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
+          
+        </div>
       
 
       
+      
+      
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/21/rocketmq-nameserver/" rel="prev" title="RocketMQ NameServer">
+                RocketMQ NameServer <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
-        <div class="post-eof"></div>
+
+      
       
     </footer>
   </div>
@@ -705,14 +527,15 @@
   </article>
 
 
-    
-  </section>
-
-  
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -733,8 +556,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -833,6 +665,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#组件架构"><span class="nav-number">1.</span> <span class="nav-text">组件架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核心组件"><span class="nav-number">2.</span> <span class="nav-text">核心组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spark-network-common-部分"><span class="nav-number">2.1.</span> <span class="nav-text">spark-network-common 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportContext"><span class="nav-number">2.1.1.</span> <span class="nav-text">TransportContext</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClientFactory"><span class="nav-number">2.1.2.</span> <span class="nav-text">TransportClientFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportServer"><span class="nav-number">2.1.3.</span> <span class="nav-text">TransportServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClient"><span class="nav-number">2.1.4.</span> <span class="nav-text">TransportClient</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark-core-中RPC部分"><span class="nav-number">2.2.</span> <span class="nav-text">Spark-core 中RPC部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndpoint"><span class="nav-number">2.2.1.</span> <span class="nav-text">RpcEndpoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndPointRef"><span class="nav-number">2.2.2.</span> <span class="nav-text">RpcEndPointRef</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEnv"><span class="nav-number">2.2.3.</span> <span class="nav-text">RpcEnv</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">2.3.</span> <span class="nav-text">其他补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-StreamManager"><span class="nav-number">2.3.1.</span> <span class="nav-text">1.StreamManager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理过程"><span class="nav-number">3.</span> <span class="nav-text">处理过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Server"><span class="nav-number">3.1.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client"><span class="nav-number">3.2.</span> <span class="nav-text">Client</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -967,6 +816,10 @@
 
 
   
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
 
   
 
@@ -977,6 +830,8 @@
 
   
 
+
+  
 
 
   

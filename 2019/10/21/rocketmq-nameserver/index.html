@@ -96,16 +96,18 @@
 
 
 
-  <meta name="description" content="写着玩">
-<meta property="og:type" content="website">
-<meta property="og:title" content="gagharv">
-<meta property="og:url" content="http://gagharv-wangwei.github.io/archives/2019/03/index.html">
+  <meta name="description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
+<meta name="keywords" content="rocketmq,源码学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ NameServer">
+<meta property="og:url" content="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/index.html">
 <meta property="og:site_name" content="gagharv">
-<meta property="og:description" content="写着玩">
+<meta property="og:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-10-27T09:17:14.102Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="gagharv">
-<meta name="twitter:description" content="写着玩">
+<meta name="twitter:title" content="RocketMQ NameServer">
+<meta name="twitter:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
 
 
 
@@ -114,7 +116,7 @@
 
 
 
-  <link rel="canonical" href="http://gagharv-wangwei.github.io/archives/2019/03/">
+  <link rel="canonical" href="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/">
 
 
 
@@ -124,7 +126,7 @@
   };
 </script>
 
-  <title>Archive | gagharv</title>
+  <title>RocketMQ NameServer | gagharv</title>
   
 
 
@@ -172,7 +174,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -261,7 +263,7 @@
         
         
           
-          <li class="menu-item menu-item-archives menu-item-active">
+          <li class="menu-item menu-item-archives">
 
     
     
@@ -282,25 +284,6 @@
 
   
     
-
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 
   
 
@@ -326,78 +309,234 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
 
-      
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        Um..! 2 posts in total. Keep on posting.
-      </span>
-      
-
-      
-
-        
-        
-        
-
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2019">2019</h1>
-          </div>
-        
-        
-
-        
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
         
-          <a class="post-title-link" href="/2019/03/18/Spark学习-RPC/" itemprop="url">
-            
-              <span itemprop="name">Spark学习 RPC</span>
-            
-          </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">RocketMQ NameServer
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-18T21:54:24+08:00" content="2019-03-18">
-          03-18
-        </time>
-      </div>
+              
+            
+          </h1>
+        
 
-    </header>
-  </article>
+        <div class="post-meta">
+          <span class="post-time">
 
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-21 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-21T09:48:37+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-27 17:17:14" itemprop="dateModified" datetime="2019-10-27T17:17:14+08:00">2019-10-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/消息队列/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
+      
 
+      
+        <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol>
+<li>Brokers 定期更新metadata</li>
+<li>提供客户端(包含生产者，消费者) 最新路由信息</li>
+</ol>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><blockquote>
+<p>NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件</p>
+</blockquote>
+<h3 id="KVConfigManager"><a href="#KVConfigManager" class="headerlink" title="KVConfigManager"></a>KVConfigManager</h3><p>kv键值对管理 ,内部维护一个HashMap支持数据持久化到文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String<span class="comment">/* Namespace */</span>, HashMap&lt;String<span class="comment">/* Key */</span>, String<span class="comment">/* Value */</span>&gt;&gt; configTable =</span><br><span class="line">    <span class="keyword">new</span> HashMap&lt;String, HashMap&lt;String, String&gt;&gt;();</span><br></pre></td></tr></table></figure></p>
+<h3 id="RouteInfoManager"><a href="#RouteInfoManager" class="headerlink" title="RouteInfoManager"></a>RouteInfoManager</h3><p>存储broker列表，topic信息，通过注册<code>BrokerHousekeepingService</code>到netty 处理链上处理对应连接关闭、Idle事件</p>
+<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><blockquote>
+<p>NamesrvStartup.main()</p>
+</blockquote>
+<ol>
+<li>创建 NamesrvController ，传入 NamesrvConfig、NettyServerConfig</li>
+<li>controller.initialize() <ul>
+<li>kvConfigManager 加载配置</li>
+<li>NettyRemotingServer 初始化</li>
+<li>注册netty处理逻辑</li>
+<li>开启间隔10s的定时任务 调用<code>routeInfoManager</code>扫描不可用的broker 关闭channel</li>
+<li>开启间隔10s的定时任务 调用<code>kvConfigManager</code>打印配置信息</li>
+<li>ssl模式下对文件ssl文件监控，变化则调用<code>reloadServerSslContext()</code>刷新Sslcontext</li>
+</ul>
+</li>
+<li>controller.start()<ul>
+<li><code>NettyRemotingServer</code> start()</li>
+<li>ssl模式文件监控开启</li>
+</ul>
+</li>
+</ol>
+
+      
     </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/rocketmq/" rel="tag"><i class="fa fa-tag"></i> rocketmq</a>
+          
+            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/18/Spark学习-RPC/" rel="next" title="Spark学习 RPC">
+                <i class="fa fa-chevron-left"></i> Spark学习 RPC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -418,8 +557,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -518,6 +666,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#功能"><span class="nav-number">1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KVConfigManager"><span class="nav-number">2.1.</span> <span class="nav-text">KVConfigManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RouteInfoManager"><span class="nav-number">2.2.</span> <span class="nav-text">RouteInfoManager</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动流程"><span class="nav-number">3.</span> <span class="nav-text">启动流程</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -652,6 +817,10 @@
 
 
   
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
 
   
 
@@ -662,6 +831,8 @@
 
   
 
+
+  
 
 
   
