@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="简介用于提交消息,支持 调用示例123456789101112131415161718192021222324public class SyncProducer &amp;#123;    public static void main(String[] args) throws Exception &amp;#123;        //Instantiate with a producer group nam">
+<meta name="keywords" content="rocketmq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ 生产者">
+<meta property="og:url" content="http://wangweizZZ.github.io/2019/10/27/rocketmq-client/index.html">
+<meta property="og:site_name" content="gagharv">
+<meta property="og:description" content="简介用于提交消息,支持 调用示例123456789101112131415161718192021222324public class SyncProducer &amp;#123;    public static void main(String[] args) throws Exception &amp;#123;        //Instantiate with a producer group nam">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://wangweizzz.github.io/images/rocketmq/rocketmq-producer-1.png">
+<meta property="og:updated_time" content="2020-01-20T09:10:15.097Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RocketMQ 生产者">
+<meta name="twitter:description" content="简介用于提交消息,支持 调用示例123456789101112131415161718192021222324public class SyncProducer &amp;#123;    public static void main(String[] args) throws Exception &amp;#123;        //Instantiate with a producer group nam">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/rocketmq/rocketmq-producer-1.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="gagharv" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://wangweizZZ.github.io/2019/10/27/rocketmq-client/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>RocketMQ 生产者 | gagharv</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">gagharv</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/10/27/rocketmq-client/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">RocketMQ 生产者
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-27 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-27T09:48:37+08:00">2019-10-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-01-20 17:10:15" itemprop="dateModified" datetime="2020-01-20T17:10:15+08:00">2020-01-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程语言/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>用于提交消息,支持</p>
+<h3 id="调用示例"><a href="#调用示例" class="headerlink" title="调用示例"></a>调用示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SyncProducer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//Instantiate with a producer group name.</span></span><br><span class="line">        DefaultMQProducer producer = <span class="keyword">new</span></span><br><span class="line">            DefaultMQProducer(<span class="string">"please_rename_unique_group_name"</span>);</span><br><span class="line">        <span class="comment">// Specify name server addresses.</span></span><br><span class="line">        producer.setNamesrvAddr(<span class="string">"localhost:9876"</span>);</span><br><span class="line">        <span class="comment">//Launch the instance.</span></span><br><span class="line">        producer.start();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            <span class="comment">//Create a message instance, specifying topic, tag and message body.</span></span><br><span class="line">            Message msg = <span class="keyword">new</span> Message(<span class="string">"TopicTest"</span> <span class="comment">/* Topic */</span>,</span><br><span class="line">                <span class="string">"TagA"</span> <span class="comment">/* Tag */</span>,</span><br><span class="line">                (<span class="string">"Hello RocketMQ "</span> +</span><br><span class="line">                    i).getBytes(RemotingHelper.DEFAULT_CHARSET) <span class="comment">/* Message body */</span></span><br><span class="line">            );</span><br><span class="line">            <span class="comment">//Call send message to deliver message to one of brokers.</span></span><br><span class="line">            SendResult sendResult = producer.send(msg);</span><br><span class="line">            System.out.printf(<span class="string">"%s%n"</span>, sendResult);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//Shut down once the producer instance is not longer in use.</span></span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p><img src="/images/rocketmq/rocketmq-producer-1.png" alt="rocketmq-producer"> </p>
+<ul>
+<li>MQAdmin 创建topic,查找获取Offset，查询消息</li>
+<li>MQProducer 开启关闭，发送消息</li>
+<li>DefaultMQProducer 生产者发送消息默认实现类</li>
+<li>TransactionMQProducer</li>
+</ul>
+<h3 id="DefaultMQProducer"><a href="#DefaultMQProducer" class="headerlink" title="DefaultMQProducer"></a>DefaultMQProducer</h3><blockquote>
+<p>  生产者默认实现类，send方法 线程安全 内部包装 <code>DefaultMQProducerImpl</code> 实现发送消息</p>
+</blockquote>
+<h4 id="内部属性"><a href="#内部属性" class="headerlink" title="内部属性"></a>内部属性</h4><ul>
+<li>send等操作实现类<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">transient</span> DefaultMQProducerImpl defaultMQProducerImpl;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生产者组名</span></span><br><span class="line"><span class="keyword">private</span> String producerGroup;</span><br><span class="line"><span class="comment">//每个topic默认队列数</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> defaultTopicQueueNums = <span class="number">4</span>;</span><br><span class="line"><span class="comment">//发送消息超时时间</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> sendMsgTimeout = <span class="number">3000</span>;</span><br><span class="line"><span class="comment">//压缩消息的阈值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> compressMsgBodyOverHowmuch = <span class="number">1024</span> * <span class="number">4</span>;</span><br><span class="line"><span class="comment">//同步模式下发送消息重试次数，可能导致重复发送</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendFailed = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//异步模式下发送消息重试次数，可能导致重复发送</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendAsyncFailed = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//发送失败后是否用另外一个broker重试</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> retryAnotherBrokerWhenNotStoreOK = <span class="keyword">false</span>;</span><br><span class="line"><span class="comment">//消息体大小上限</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> maxMessageSize = <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">4</span>; <span class="comment">// 4M</span></span><br><span class="line"><span class="comment">//trace </span></span><br><span class="line"><span class="keyword">private</span> TraceDispatcher traceDispatcher = <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="DefaultMQProducerImpl"><a href="#DefaultMQProducerImpl" class="headerlink" title="DefaultMQProducerImpl"></a>DefaultMQProducerImpl</h3><blockquote>
+<p>  生产者实际工作类  DefaultMQProducerImpl -&gt; MQProducerInner</p>
+</blockquote>
+<h4 id="内部属性-1"><a href="#内部属性-1" class="headerlink" title="内部属性"></a>内部属性</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//维护一个DefaultMQProducer引用，用于获取producerGroup、SendMsgTimeout等信息</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> DefaultMQProducer defaultMQProducer;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* topic */</span>, TopicPublishInfo&gt; topicPublishInfoTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, TopicPublishInfo&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ArrayList&lt;SendMessageHook&gt; sendMessageHookList = <span class="keyword">new</span> ArrayList&lt;SendMessageHook&gt;();</span><br><span class="line"><span class="keyword">protected</span> BlockingQueue&lt;Runnable&gt; checkRequestQueue;</span><br><span class="line"><span class="keyword">protected</span> ExecutorService checkExecutor;</span><br><span class="line"><span class="comment">//内部消息发送类</span></span><br><span class="line"><span class="keyword">private</span> MQClientInstance mQClientFactory;</span><br><span class="line"><span class="keyword">private</span> ArrayList&lt;CheckForbiddenHook&gt; checkForbiddenHookList = <span class="keyword">new</span> ArrayList&lt;CheckForbiddenHook&gt;();</span><br><span class="line"><span class="comment">//根据发送broker的延迟选择对应queue</span></span><br><span class="line"><span class="keyword">private</span> MQFaultStrategy mqFaultStrategy = <span class="keyword">new</span> MQFaultStrategy();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue&lt;Runnable&gt; asyncSenderThreadPoolQueue;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ExecutorService defaultAsyncSenderExecutor;</span><br><span class="line"><span class="keyword">private</span> ExecutorService asyncSenderExecutor;</span><br></pre></td></tr></table></figure>
+<h4 id="重要方法"><a href="#重要方法" class="headerlink" title="重要方法"></a>重要方法</h4><blockquote>
+<p>sendDefaultImpl 发送消息</p>
+<ol>
+<li>检查消息 <code>Validators.checkMessage(msg, this.defaultMQProducer);</code></li>
+<li>查询 topic路由信息（未获得信息则从调用<code>MQClientInstance#updateTopicRouteInfoFromNameServer</code>获取对应topic路由信息）</li>
+<li>调用<code>MQFaultStrategy#selectOneMessageQueue(tpInfo, lastBrokerName)</code>获得对应<code>MessageQueue</code>发送消息队列，</li>
+</ol>
+</blockquote>
+<ol start="4">
+<li>调用<code>sendKernelImpl()</code> ，通过<code>MQClientAPIImpl</code> 内部的<code>MQClientAPIImpl</code>发送<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sendResult = <span class="keyword">this</span>.mQClientFactory.getMQClientAPIImpl().sendMessage(...)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h4><ol>
+<li><p>从<code>MQClientManager</code>中获取获取一个<code>MQClientInstance</code>实例，<br>(<code>MQClientManager</code>内部维护一个<code>factoryTable</code>，以<code>clientIP</code>+<code>instanceName</code>+<code>unitName</code>为key复用<code>MQClientInstance</code>)</p>
+</li>
+<li><p>注册到 MQClientInstance 上，同一jvm，producerGroup只能注册一次</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> registerOK = mQClientFactory.registerProducer(<span class="keyword">this</span>.defaultMQProducer.getProducerGroup(), <span class="keyword">this</span>);</span><br><span class="line"><span class="keyword">if</span> (!registerOK) &#123;</span><br><span class="line"><span class="keyword">this</span>.serviceState = ServiceState.CREATE_JUST;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> MQClientException(<span class="string">"The producer group["</span> + <span class="keyword">this</span>.defaultMQProducer.getProducerGroup()</span><br><span class="line">    + <span class="string">"] has been created before, specify another name please."</span> + FAQUrl.suggestTodo(FAQUrl.GROUP_NAME_DUPLICATE_URL),</span><br><span class="line">    <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>topicPublishInfoTable 路由信息</p>
+</li>
+<li><code>mQClientFactory.start()</code> 首次会调用启动 <code>MQClientInstance</code></li>
+</ol>
+<h3 id="MQClientInstance"><a href="#MQClientInstance" class="headerlink" title="MQClientInstance"></a>MQClientInstance</h3><blockquote>
+<p>连接mq的客户端</p>
+</blockquote>
+<h4 id="内部属性-2"><a href="#内部属性-2" class="headerlink" title="内部属性"></a>内部属性</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClientConfig clientConfig;</span><br><span class="line"><span class="comment">//producer group name和 DefaultMQProducerImpl 的映射</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* group */</span>, MQProducerInner&gt; producerTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, MQProducerInner&gt;();</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* group */</span>, MQAdminExtInner&gt; adminExtTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, MQAdminExtInner&gt;();</span><br><span class="line"><span class="comment">//netty配置</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> NettyClientConfig nettyClientConfig;</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> MQClientAPIImpl mQClientAPIImpl;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> MQAdminImpl mQAdminImpl;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Topic */</span>, TopicRouteData&gt; topicRouteTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, TopicRouteData&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Lock lockNamesrv = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Lock lockHeartbeat = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Broker Name */</span>, HashMap&lt;Long<span class="comment">/* brokerId */</span>, String<span class="comment">/* address */</span>&gt;&gt; brokerAddrTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, HashMap&lt;Long, String&gt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Broker Name */</span>, HashMap&lt;String<span class="comment">/* address */</span>, Integer&gt;&gt; brokerVersionTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, HashMap&lt;String, Integer&gt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(<span class="keyword">new</span> ThreadFactory() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Thread(r, <span class="string">"MQClientFactoryScheduledThread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClientRemotingProcessor clientRemotingProcessor;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> PullMessageService pullMessageService;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> RebalanceService rebalanceService;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> DefaultMQProducer defaultMQProducer;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConsumerStatsManager consumerStatsManager;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicLong sendHeartbeatTimesTotal = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">private</span> ServiceState serviceState = ServiceState.CREATE_JUST;</span><br><span class="line"><span class="keyword">private</span> DatagramSocket datagramSocket;</span><br></pre></td></tr></table></figure>
+<h3 id="MQFaultStrategy"><a href="#MQFaultStrategy" class="headerlink" title="MQFaultStrategy"></a>MQFaultStrategy</h3><p>内部包含 <code>LatencyFaultToleranceImpl</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> LatencyFaultTolerance&lt;String&gt; latencyFaultTolerance = <span class="keyword">new</span> LatencyFaultToleranceImpl();</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>LatencyFaultToleranceImpl<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//维护每个Broker的发送消息的延迟</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentHashMap&lt;String, FaultItem&gt; faultItemTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, FaultItem&gt;(<span class="number">16</span>);</span><br><span class="line"><span class="comment">//通过theadLocal方式记录当前选中的broker，如果执行失败后选择+1</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ThreadLocalIndex whichItemWorst = <span class="keyword">new</span> ThreadLocalIndex();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="重要方法-1"><a href="#重要方法-1" class="headerlink" title="重要方法"></a>重要方法</h4><blockquote>
+<p><code>selectOneMessageQueue</code></p>
+<ul>
+<li>当<code>sendLatencyFaultEnable=true</code></li>
+</ul>
+<ol>
+<li>返回一个broker==lastBrokerName</li>
+<li>如果第1步没找到，则</li>
+<li></li>
+</ol>
+</blockquote>
+<ul>
+<li>当<code>sendLatencyFaultEnable=false</code></li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/rocketmq/" rel="tag"><i class="fa fa-tag"></i> rocketmq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/21/rocketmq-nameserver/" rel="next" title="RocketMQ NameServer">
+                <i class="fa fa-chevron-left"></i> RocketMQ NameServer
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/19/Nacos 配置中心-服务启动/" rel="prev" title="Nacos 配置中心--服务启动">
+                Nacos 配置中心--服务启动 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.gif" alt="wang wei">
+            
+              <p class="site-author-name" itemprop="name">wang wei</p>
+              <p class="site-description motion-element" itemprop="description">写着玩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#调用示例"><span class="nav-number">1.1.</span> <span class="nav-text">调用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DefaultMQProducer"><span class="nav-number">2.1.</span> <span class="nav-text">DefaultMQProducer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部属性"><span class="nav-number">2.1.1.</span> <span class="nav-text">内部属性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DefaultMQProducerImpl"><span class="nav-number">2.2.</span> <span class="nav-text">DefaultMQProducerImpl</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部属性-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">内部属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重要方法"><span class="nav-number">2.2.2.</span> <span class="nav-text">重要方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动流程"><span class="nav-number">2.2.3.</span> <span class="nav-text">启动流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MQClientInstance"><span class="nav-number">2.3.</span> <span class="nav-text">MQClientInstance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部属性-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">内部属性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MQFaultStrategy"><span class="nav-number">2.4.</span> <span class="nav-text">MQFaultStrategy</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重要方法-1"><span class="nav-number">2.4.1.</span> <span class="nav-text">重要方法</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wang wei</span>
+
+  
+
+  
+</div>
+<!--
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

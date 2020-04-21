@@ -99,7 +99,7 @@
   <meta name="description" content="写着玩">
 <meta property="og:type" content="website">
 <meta property="og:title" content="gagharv">
-<meta property="og:url" content="http://gagharv-wangwei.github.io/index.html">
+<meta property="og:url" content="http://wangweizZZ.github.io/index.html">
 <meta property="og:site_name" content="gagharv">
 <meta property="og:description" content="写着玩">
 <meta property="og:locale" content="default">
@@ -114,7 +114,7 @@
 
 
 
-  <link rel="canonical" href="http://gagharv-wangwei.github.io/">
+  <link rel="canonical" href="http://wangweizZZ.github.io/">
 
 
 
@@ -324,7 +324,451 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://gagharv-wangwei.github.io/2019/10/21/rocketmq-nameserver/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/19/Nacos 配置中心-服务启动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/19/Nacos 配置中心-服务启动/" class="post-title-link" itemprop="url">Nacos 配置中心--服务启动</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-19 20:40:14" itemprop="dateCreated datePublished" datetime="2020-04-19T20:40:14+08:00">2020-04-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-21 18:13:42" itemprop="dateModified" datetime="2020-04-21T18:13:42+08:00">2020-04-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/云原生/" itemprop="url" rel="index"><span itemprop="name">云原生</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Nacos-启动流程"><a href="#Nacos-启动流程" class="headerlink" title="Nacos 启动流程"></a>Nacos 启动流程</h1><p>nacos console 启动日志 位于  {NACOSHOME}/logs/nacos.log<br>nacos config 启动日志 位于 {NACOSHOME}/logs/config-server.log</p>
+<p>主要流程包含将mysql中存储的数据写入本地文件（{NACOSHOME}/data/) 以及开启一些定时任务用于数据定期比对，清理、 以及获取服务集群列表用于支持节点动态增加</p>
+<h2 id="1-配置信息读取"><a href="#1-配置信息读取" class="headerlink" title="1. 配置信息读取"></a>1. 配置信息读取</h2><p><code>StartingSpringApplicationRunListener</code> 打印启动信息<br>同时通过调用<code>SystemUtils</code>触发初始化<code>InetUtils</code>静态初始化触发PropertyUtil静态初始化从而触发配置属性加载<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">null</span>;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">       String baseDir = System.getProperty(<span class="string">"nacos.home"</span>);</span><br><span class="line">       <span class="keyword">if</span> (StringUtils.isNotBlank(baseDir)) &#123;</span><br><span class="line">           inputStream = <span class="keyword">new</span> FileInputStream(baseDir + <span class="string">"/conf/application.properties"</span>);</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           inputStream = PropertyUtil.class</span><br><span class="line">               .getResourceAsStream(<span class="string">"/application.properties"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       properties.load(inputStream);</span><br><span class="line">   &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">       log.error(<span class="string">"read property file error:"</span> + e);</span><br><span class="line">   &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">       IOUtils.closeQuietly(inputStream);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-数据加载"><a href="#2-数据加载" class="headerlink" title="2. 数据加载"></a>2. 数据加载</h2><p>核心类<code>DumpService</code><br>负责初始化加载数据库中的数据<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LogUtil.defaultLog.warn(<span class="string">"DumpService start"</span>);</span><br><span class="line">    DumpProcessor processor = <span class="keyword">new</span> DumpProcessor(<span class="keyword">this</span>);</span><br><span class="line">    DumpAllProcessor dumpAllProcessor = <span class="keyword">new</span> DumpAllProcessor(<span class="keyword">this</span>);</span><br><span class="line">    DumpAllBetaProcessor dumpAllBetaProcessor = <span class="keyword">new</span> DumpAllBetaProcessor(<span class="keyword">this</span>);</span><br><span class="line">    DumpAllTagProcessor dumpAllTagProcessor = <span class="keyword">new</span> DumpAllTagProcessor(<span class="keyword">this</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//用于处理配置变更任务的管理器</span></span><br><span class="line">    dumpTaskMgr = <span class="keyword">new</span> TaskManager(<span class="string">"com.alibaba.nacos.server.DumpTaskManager"</span>);</span><br><span class="line">    dumpTaskMgr.setDefaultTaskProcessor(processor);</span><br><span class="line">    <span class="comment">//用于处理定时dump数据的任务管理器</span></span><br><span class="line">    dumpAllTaskMgr = <span class="keyword">new</span> TaskManager(<span class="string">"com.alibaba.nacos.server.DumpAllTaskManager"</span>);</span><br><span class="line">    dumpAllTaskMgr.setDefaultTaskProcessor(dumpAllProcessor);</span><br><span class="line">    <span class="comment">// ？？？此处感觉缺了 dumpAllTaskMgr.addProcessor(DumpAllBetaTask.TASK_ID,dumpAllBetaProcessor);</span></span><br><span class="line">    Runnable dumpAll = () -&gt; dumpAllTaskMgr.addTask(DumpAllTask.TASK_ID, <span class="keyword">new</span> DumpAllTask());</span><br><span class="line">    Runnable dumpAllBeta = () -&gt; dumpAllTaskMgr.addTask(DumpAllBetaTask.TASK_ID, <span class="keyword">new</span> DumpAllBetaTask());</span><br><span class="line"></span><br><span class="line">    Runnable clearConfigHistory = () -&gt; &#123;</span><br><span class="line">        log.warn(<span class="string">"clearConfigHistory start"</span>);</span><br><span class="line">        <span class="keyword">if</span> (ServerListService.isFirstIp()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Timestamp startTime = getBeforeStamp(TimeUtils.getCurrentTime(), <span class="number">24</span> * getRetentionDays());</span><br><span class="line">                <span class="keyword">int</span> totalCount = persistService.findConfigHistoryCountByTime(startTime);</span><br><span class="line">                <span class="keyword">if</span> (totalCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">int</span> pageSize = <span class="number">1000</span>;</span><br><span class="line">                    <span class="keyword">int</span> removeTime = (totalCount + pageSize - <span class="number">1</span>) / pageSize;</span><br><span class="line">                    log.warn(<span class="string">"clearConfigHistory, getBeforeStamp:&#123;&#125;, totalCount:&#123;&#125;, pageSize:&#123;&#125;, removeTime:&#123;&#125;"</span>,</span><br><span class="line">                        <span class="keyword">new</span> Object[] &#123;startTime, totalCount, pageSize, removeTime&#125;);</span><br><span class="line">                    <span class="keyword">while</span> (removeTime &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="comment">// 分页删除，以免批量太大报错</span></span><br><span class="line">                        persistService.removeConfigHistory(startTime, pageSize);</span><br><span class="line">                        removeTime--;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">                log.error(<span class="string">"clearConfigHistory error"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 1.将数据库配置信息加载到本地文件以及缓存md5（不包含beta、tag）</span></span><br><span class="line">        dumpConfigInfo(dumpAllProcessor);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.加载beta缓存</span></span><br><span class="line">        LogUtil.defaultLog.info(<span class="string">"start clear all config-info-beta."</span>);</span><br><span class="line">        DiskUtil.clearAllBeta();</span><br><span class="line">        <span class="keyword">if</span> (persistService.isExistTable(BETA_TABLE_NAME)) &#123;</span><br><span class="line">            dumpAllBetaProcessor.process(DumpAllBetaTask.TASK_ID, <span class="keyword">new</span> DumpAllBetaTask());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 3.加载带tag的配置数据</span></span><br><span class="line">        LogUtil.defaultLog.info(<span class="string">"start clear all config-info-tag."</span>);</span><br><span class="line">        DiskUtil.clearAllTag();</span><br><span class="line">        <span class="keyword">if</span> (persistService.isExistTable(TAG_TABLE_NAME)) &#123;</span><br><span class="line">            dumpAllTagProcessor.process(DumpAllTagTask.TASK_ID, <span class="keyword">new</span> DumpAllTagTask());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.加载聚合数据</span></span><br><span class="line">        List&lt;ConfigInfoChanged&gt; configList = persistService.findAllAggrGroup();</span><br><span class="line">        <span class="keyword">if</span> (configList != <span class="keyword">null</span> &amp;&amp; !configList.isEmpty()) &#123;</span><br><span class="line">            total = configList.size();</span><br><span class="line">            List&lt;List&lt;ConfigInfoChanged&gt;&gt; splitList = splitList(configList, INIT_THREAD_COUNT);</span><br><span class="line">            <span class="keyword">for</span> (List&lt;ConfigInfoChanged&gt; list : splitList) &#123;</span><br><span class="line">                MergeAllDataWorker work = <span class="keyword">new</span> MergeAllDataWorker(list);</span><br><span class="line">                work.start();</span><br><span class="line">            &#125;</span><br><span class="line">            log.info(<span class="string">"server start, schedule merge end."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LogUtil.fatalLog.error(</span><br><span class="line">            <span class="string">"Nacos Server did not start because dumpservice bean construction failure :\n"</span> + e.getMessage(),</span><br><span class="line">            e.getCause());</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">            <span class="string">"Nacos Server did not start because dumpservice bean construction failure :\n"</span> + e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!STANDALONE_MODE) &#123;</span><br><span class="line">        Runnable heartbeat = () -&gt; &#123;</span><br><span class="line">            String heartBeatTime = TimeUtils.getCurrentTime().toString();</span><br><span class="line">            <span class="comment">// write disk</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                DiskUtil.saveHeartBeatToDisk(heartBeatTime);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                LogUtil.fatalLog.error(<span class="string">"save heartbeat fail"</span> + e.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// 5.定期写heartbeat文件，hearbeat文件记录时间戳用于快速启动</span></span><br><span class="line">        TimerTaskService.scheduleWithFixedDelay(heartbeat, <span class="number">0</span>, <span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> initialDelay = <span class="keyword">new</span> Random().nextInt(INITIAL_DELAY_IN_MINUTE) + <span class="number">10</span>;</span><br><span class="line">        LogUtil.defaultLog.warn(<span class="string">"initialDelay:&#123;&#125;"</span>, initialDelay);</span><br><span class="line">        <span class="comment">//6. 定期全量dump比对数据</span></span><br><span class="line">        TimerTaskService.scheduleWithFixedDelay(dumpAll, initialDelay, DUMP_ALL_INTERVAL_IN_MINUTE,</span><br><span class="line">            TimeUnit.MINUTES);</span><br><span class="line">        <span class="comment">//7. 定期全量dump比对beta数据（TODO 此处似乎有bug并没有给dumpAllTaskMgr 添加对应的dumpAllBetaProcessor</span></span><br><span class="line">        TimerTaskService.scheduleWithFixedDelay(dumpAllBeta, initialDelay, DUMP_ALL_INTERVAL_IN_MINUTE,</span><br><span class="line">            TimeUnit.MINUTES);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 8.定期删除数据</span></span><br><span class="line">    TimerTaskService.scheduleWithFixedDelay(clearConfigHistory, <span class="number">10</span>, <span class="number">10</span>, TimeUnit.MINUTES);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="dumpConfigInfo"><a href="#dumpConfigInfo" class="headerlink" title="dumpConfigInfo"></a>dumpConfigInfo</h3><p>dump配置信息存在快速启动和全量dump,当开启快速启动且上一次时间戳距离当前6小时内才会快速启动，否则全量dump</p>
+<blockquote>
+<p> 配置<code>isQuickStart=true</code>开启快速启动，启动后会开启一个线程定期往本地 <code>{NACOSHOME}/nacos/status/heartBeat.txt</code>目录写时间戳，用于下次重启时快速启动</p>
+</blockquote>
+<h4 id="全量dump"><a href="#全量dump" class="headerlink" title="全量dump"></a>全量dump</h4><p>全量dump会清理本地文件 然后从数据库中加载数据到文件，以及对应内容的md5到内存<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DiskUtil.clearAll();</span><br><span class="line">dumpAllProcessor.process(DumpAllTask.TASK_ID, <span class="keyword">new</span> DumpAllTask());</span><br></pre></td></tr></table></figure></p>
+<p>dumpAllProcessor.process 查询所有的配置信息，依次执行dump操作<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Page&lt;PersistService.ConfigInfoWrapper&gt; page = persistService.findAllConfigInfoFragment(lastMaxId,PAGE_SIZE);</span><br><span class="line">...</span><br><span class="line"><span class="keyword">boolean</span> result = ConfigService.dump(cf.getDataId(), cf.getGroup(), cf.getTenant(), cf.getContent(),cf.getLastModified(), cf.getType();</span><br></pre></td></tr></table></figure></p>
+<p>ConfigService.dump 将内容写入磁盘,md5信息写入CACHE内存<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (md5.equals(ConfigService.getContentMd5(groupKey))) &#123; <span class="comment">//从 CACHE.get(groupKey); 中获取缓存的md5 启动时势必为空</span></span><br><span class="line">    ...</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!STANDALONE_MODE || PropertyUtil.isStandaloneUseMysql()) &#123;</span><br><span class="line">    DiskUtil.saveToDisk(dataId, group, tenant, content);</span><br><span class="line">&#125;</span><br><span class="line">updateMd5(groupKey, md5, lastModifiedTs); <span class="comment">//groupKey = dataId+groupId+tenantId</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="部分dump"><a href="#部分dump" class="headerlink" title="部分dump"></a>部分dump</h4><p>部分dump下会读取heartBeat.txt 获得上一次写入的时间戳，在此时间基础上往前推6小时 dump检查的起始时间<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dumpChangeProcessor.process(DumpChangeTask.TASK_ID, <span class="keyword">new</span> DumpChangeTask())</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>获取所有配置信息检查md5是否变更，变更则更新（写文件md5刷内存）</li>
+<li>从配置信息历史表中查询最近时间内（即上文说的起始时间到当前）删除的配置，删除对应文件以及内存中的信息</li>
+<li>获取指定时间内变更的配置，变更则更新（写文件md5刷内存）（？？？感觉和第一步有重复）</li>
+<li><code>ConfigService.reloadConfig();</code>这一步刷新白名单，（TODO 目前不太确认用途)</li>
+<li><code>TimerTaskService.scheduleWithFixedDelay(checkMd5Task, 0, 12,TimeUnit.HOURS);</code> 开启一个定时任务检查CAHCE和文件中存的md5是否一致，不一致则变更</li>
+</ol>
+<h3 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h3><p>通过 dumpConfigInfo 方法加载完数据后会开启多个定时任务</p>
+<ul>
+<li>heartbeatTask 定期写时间戳</li>
+<li>dumpAllTask 定期比对更新所有基础配置</li>
+<li>dumpAllBetaTask 定期比对更新beta配置（TODO此处似乎有bug,事实是更新的基础配置）</li>
+<li>checkMd5Task（在快速启动时开启）</li>
+<li>clearConfigHistoryTask定期删除历史数据</li>
+</ul>
+<h2 id="3-监听服务集群列表"><a href="#3-监听服务集群列表" class="headerlink" title="3. 监听服务集群列表"></a>3. 监听服务集群列表</h2><p>核心类<code>ServerListService</code></p>
+<p>会开启一个 GetServerListTask 每隔5s获取服务器列表，逻辑如下:</p>
+<ol>
+<li>如果是单机模式，则直接返回本机ip</li>
+<li>非单机模式，读取配置文件（conf/cluster.conf）中的ip列表</li>
+<li>为获取到ip则从配置好的远端服务器获取</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/10/27/rocketmq-client/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/10/27/rocketmq-client/" class="post-title-link" itemprop="url">RocketMQ 生产者</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-27 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-27T09:48:37+08:00">2019-10-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-01-20 17:10:15" itemprop="dateModified" datetime="2020-01-20T17:10:15+08:00">2020-01-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程语言/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>用于提交消息,支持</p>
+<h3 id="调用示例"><a href="#调用示例" class="headerlink" title="调用示例"></a>调用示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SyncProducer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//Instantiate with a producer group name.</span></span><br><span class="line">        DefaultMQProducer producer = <span class="keyword">new</span></span><br><span class="line">            DefaultMQProducer(<span class="string">"please_rename_unique_group_name"</span>);</span><br><span class="line">        <span class="comment">// Specify name server addresses.</span></span><br><span class="line">        producer.setNamesrvAddr(<span class="string">"localhost:9876"</span>);</span><br><span class="line">        <span class="comment">//Launch the instance.</span></span><br><span class="line">        producer.start();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            <span class="comment">//Create a message instance, specifying topic, tag and message body.</span></span><br><span class="line">            Message msg = <span class="keyword">new</span> Message(<span class="string">"TopicTest"</span> <span class="comment">/* Topic */</span>,</span><br><span class="line">                <span class="string">"TagA"</span> <span class="comment">/* Tag */</span>,</span><br><span class="line">                (<span class="string">"Hello RocketMQ "</span> +</span><br><span class="line">                    i).getBytes(RemotingHelper.DEFAULT_CHARSET) <span class="comment">/* Message body */</span></span><br><span class="line">            );</span><br><span class="line">            <span class="comment">//Call send message to deliver message to one of brokers.</span></span><br><span class="line">            SendResult sendResult = producer.send(msg);</span><br><span class="line">            System.out.printf(<span class="string">"%s%n"</span>, sendResult);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//Shut down once the producer instance is not longer in use.</span></span><br><span class="line">        producer.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p><img src="/images/rocketmq/rocketmq-producer-1.png" alt="rocketmq-producer"> </p>
+<ul>
+<li>MQAdmin 创建topic,查找获取Offset，查询消息</li>
+<li>MQProducer 开启关闭，发送消息</li>
+<li>DefaultMQProducer 生产者发送消息默认实现类</li>
+<li>TransactionMQProducer</li>
+</ul>
+<h3 id="DefaultMQProducer"><a href="#DefaultMQProducer" class="headerlink" title="DefaultMQProducer"></a>DefaultMQProducer</h3><blockquote>
+<p>  生产者默认实现类，send方法 线程安全 内部包装 <code>DefaultMQProducerImpl</code> 实现发送消息</p>
+</blockquote>
+<h4 id="内部属性"><a href="#内部属性" class="headerlink" title="内部属性"></a>内部属性</h4><ul>
+<li>send等操作实现类<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">transient</span> DefaultMQProducerImpl defaultMQProducerImpl;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生产者组名</span></span><br><span class="line"><span class="keyword">private</span> String producerGroup;</span><br><span class="line"><span class="comment">//每个topic默认队列数</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> defaultTopicQueueNums = <span class="number">4</span>;</span><br><span class="line"><span class="comment">//发送消息超时时间</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> sendMsgTimeout = <span class="number">3000</span>;</span><br><span class="line"><span class="comment">//压缩消息的阈值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> compressMsgBodyOverHowmuch = <span class="number">1024</span> * <span class="number">4</span>;</span><br><span class="line"><span class="comment">//同步模式下发送消息重试次数，可能导致重复发送</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendFailed = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//异步模式下发送消息重试次数，可能导致重复发送</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> retryTimesWhenSendAsyncFailed = <span class="number">2</span>;</span><br><span class="line"><span class="comment">//发送失败后是否用另外一个broker重试</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> retryAnotherBrokerWhenNotStoreOK = <span class="keyword">false</span>;</span><br><span class="line"><span class="comment">//消息体大小上限</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> maxMessageSize = <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">4</span>; <span class="comment">// 4M</span></span><br><span class="line"><span class="comment">//trace </span></span><br><span class="line"><span class="keyword">private</span> TraceDispatcher traceDispatcher = <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="DefaultMQProducerImpl"><a href="#DefaultMQProducerImpl" class="headerlink" title="DefaultMQProducerImpl"></a>DefaultMQProducerImpl</h3><blockquote>
+<p>  生产者实际工作类  DefaultMQProducerImpl -&gt; MQProducerInner</p>
+</blockquote>
+<h4 id="内部属性-1"><a href="#内部属性-1" class="headerlink" title="内部属性"></a>内部属性</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//维护一个DefaultMQProducer引用，用于获取producerGroup、SendMsgTimeout等信息</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> DefaultMQProducer defaultMQProducer;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* topic */</span>, TopicPublishInfo&gt; topicPublishInfoTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, TopicPublishInfo&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ArrayList&lt;SendMessageHook&gt; sendMessageHookList = <span class="keyword">new</span> ArrayList&lt;SendMessageHook&gt;();</span><br><span class="line"><span class="keyword">protected</span> BlockingQueue&lt;Runnable&gt; checkRequestQueue;</span><br><span class="line"><span class="keyword">protected</span> ExecutorService checkExecutor;</span><br><span class="line"><span class="comment">//内部消息发送类</span></span><br><span class="line"><span class="keyword">private</span> MQClientInstance mQClientFactory;</span><br><span class="line"><span class="keyword">private</span> ArrayList&lt;CheckForbiddenHook&gt; checkForbiddenHookList = <span class="keyword">new</span> ArrayList&lt;CheckForbiddenHook&gt;();</span><br><span class="line"><span class="comment">//根据发送broker的延迟选择对应queue</span></span><br><span class="line"><span class="keyword">private</span> MQFaultStrategy mqFaultStrategy = <span class="keyword">new</span> MQFaultStrategy();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue&lt;Runnable&gt; asyncSenderThreadPoolQueue;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ExecutorService defaultAsyncSenderExecutor;</span><br><span class="line"><span class="keyword">private</span> ExecutorService asyncSenderExecutor;</span><br></pre></td></tr></table></figure>
+<h4 id="重要方法"><a href="#重要方法" class="headerlink" title="重要方法"></a>重要方法</h4><blockquote>
+<p>sendDefaultImpl 发送消息</p>
+<ol>
+<li>检查消息 <code>Validators.checkMessage(msg, this.defaultMQProducer);</code></li>
+<li>查询 topic路由信息（未获得信息则从调用<code>MQClientInstance#updateTopicRouteInfoFromNameServer</code>获取对应topic路由信息）</li>
+<li>调用<code>MQFaultStrategy#selectOneMessageQueue(tpInfo, lastBrokerName)</code>获得对应<code>MessageQueue</code>发送消息队列，</li>
+</ol>
+</blockquote>
+<ol start="4">
+<li>调用<code>sendKernelImpl()</code> ，通过<code>MQClientAPIImpl</code> 内部的<code>MQClientAPIImpl</code>发送<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sendResult = <span class="keyword">this</span>.mQClientFactory.getMQClientAPIImpl().sendMessage(...)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h4><ol>
+<li><p>从<code>MQClientManager</code>中获取获取一个<code>MQClientInstance</code>实例，<br>(<code>MQClientManager</code>内部维护一个<code>factoryTable</code>，以<code>clientIP</code>+<code>instanceName</code>+<code>unitName</code>为key复用<code>MQClientInstance</code>)</p>
+</li>
+<li><p>注册到 MQClientInstance 上，同一jvm，producerGroup只能注册一次</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> registerOK = mQClientFactory.registerProducer(<span class="keyword">this</span>.defaultMQProducer.getProducerGroup(), <span class="keyword">this</span>);</span><br><span class="line"><span class="keyword">if</span> (!registerOK) &#123;</span><br><span class="line"><span class="keyword">this</span>.serviceState = ServiceState.CREATE_JUST;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> MQClientException(<span class="string">"The producer group["</span> + <span class="keyword">this</span>.defaultMQProducer.getProducerGroup()</span><br><span class="line">    + <span class="string">"] has been created before, specify another name please."</span> + FAQUrl.suggestTodo(FAQUrl.GROUP_NAME_DUPLICATE_URL),</span><br><span class="line">    <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>topicPublishInfoTable 路由信息</p>
+</li>
+<li><code>mQClientFactory.start()</code> 首次会调用启动 <code>MQClientInstance</code></li>
+</ol>
+<h3 id="MQClientInstance"><a href="#MQClientInstance" class="headerlink" title="MQClientInstance"></a>MQClientInstance</h3><blockquote>
+<p>连接mq的客户端</p>
+</blockquote>
+<h4 id="内部属性-2"><a href="#内部属性-2" class="headerlink" title="内部属性"></a>内部属性</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClientConfig clientConfig;</span><br><span class="line"><span class="comment">//producer group name和 DefaultMQProducerImpl 的映射</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* group */</span>, MQProducerInner&gt; producerTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, MQProducerInner&gt;();</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* group */</span>, MQAdminExtInner&gt; adminExtTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, MQAdminExtInner&gt;();</span><br><span class="line"><span class="comment">//netty配置</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> NettyClientConfig nettyClientConfig;</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> MQClientAPIImpl mQClientAPIImpl;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> MQAdminImpl mQAdminImpl;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Topic */</span>, TopicRouteData&gt; topicRouteTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, TopicRouteData&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Lock lockNamesrv = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Lock lockHeartbeat = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Broker Name */</span>, HashMap&lt;Long<span class="comment">/* brokerId */</span>, String<span class="comment">/* address */</span>&gt;&gt; brokerAddrTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, HashMap&lt;Long, String&gt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentMap&lt;String<span class="comment">/* Broker Name */</span>, HashMap&lt;String<span class="comment">/* address */</span>, Integer&gt;&gt; brokerVersionTable =</span><br><span class="line">    <span class="keyword">new</span> ConcurrentHashMap&lt;String, HashMap&lt;String, Integer&gt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(<span class="keyword">new</span> ThreadFactory() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Thread(r, <span class="string">"MQClientFactoryScheduledThread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ClientRemotingProcessor clientRemotingProcessor;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> PullMessageService pullMessageService;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> RebalanceService rebalanceService;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> DefaultMQProducer defaultMQProducer;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConsumerStatsManager consumerStatsManager;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicLong sendHeartbeatTimesTotal = <span class="keyword">new</span> AtomicLong(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">private</span> ServiceState serviceState = ServiceState.CREATE_JUST;</span><br><span class="line"><span class="keyword">private</span> DatagramSocket datagramSocket;</span><br></pre></td></tr></table></figure>
+<h3 id="MQFaultStrategy"><a href="#MQFaultStrategy" class="headerlink" title="MQFaultStrategy"></a>MQFaultStrategy</h3><p>内部包含 <code>LatencyFaultToleranceImpl</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> LatencyFaultTolerance&lt;String&gt; latencyFaultTolerance = <span class="keyword">new</span> LatencyFaultToleranceImpl();</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>LatencyFaultToleranceImpl<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//维护每个Broker的发送消息的延迟</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ConcurrentHashMap&lt;String, FaultItem&gt; faultItemTable = <span class="keyword">new</span> ConcurrentHashMap&lt;String, FaultItem&gt;(<span class="number">16</span>);</span><br><span class="line"><span class="comment">//通过theadLocal方式记录当前选中的broker，如果执行失败后选择+1</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ThreadLocalIndex whichItemWorst = <span class="keyword">new</span> ThreadLocalIndex();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="重要方法-1"><a href="#重要方法-1" class="headerlink" title="重要方法"></a>重要方法</h4><blockquote>
+<p><code>selectOneMessageQueue</code></p>
+<ul>
+<li>当<code>sendLatencyFaultEnable=true</code></li>
+</ul>
+<ol>
+<li>返回一个broker==lastBrokerName</li>
+<li>如果第1步没找到，则</li>
+<li></li>
+</ol>
+</blockquote>
+<ul>
+<li>当<code>sendLatencyFaultEnable=false</code></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -525,7 +969,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -587,7 +1031,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-27 17:09:33" itemprop="dateModified" datetime="2019-10-27T17:09:33+08:00">2019-10-27</time>
+                <time title="Modified: 2019-10-29 11:47:58" itemprop="dateModified" datetime="2019-10-29T11:47:58+08:00">2019-10-29</time>
               
             
           </span>
@@ -642,7 +1086,7 @@
         
           
             <p>包含spark-network-common模块和spark-core中rpc部分</p>
-<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark-total.png" alt="spark各组件图"></p>
+<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark/spark-total.png" alt="spark各组件图"></p>
 <hr>
 <h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p>
 <ul>
@@ -661,8 +1105,8 @@
 <hr>
 <h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><h3 id="1-StreamManager"><a href="#1-StreamManager" class="headerlink" title="1.StreamManager"></a>1.StreamManager</h3><p><code>NettyStreamManager</code> 用于提供NettyRpcEnv的文件流服务，可注册 文件、jar包和目录 三种资源，可以用来处理StreamRequest类型的消息</p>
 <hr>
-<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
-<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark-client.png" alt="client处理流程图"></p>
+<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark/spark-client.png" alt="client处理流程图"></p>
 <p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p>
 <p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>
 
@@ -751,7 +1195,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -774,7 +1218,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -801,7 +1249,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -847,7 +1297,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

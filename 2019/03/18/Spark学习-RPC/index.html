@@ -100,18 +100,18 @@
 <meta name="keywords" content="spark,源码学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark学习 RPC">
-<meta property="og:url" content="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/index.html">
+<meta property="og:url" content="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/index.html">
 <meta property="og:site_name" content="gagharv">
 <meta property="og:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-total.png">
-<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-server.png">
-<meta property="og:image" content="http://gagharv-wangwei.github.io/images/spark-client.png">
-<meta property="og:updated_time" content="2019-10-27T09:09:33.838Z">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-server.png">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-client.png">
+<meta property="og:updated_time" content="2019-10-29T03:47:58.763Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark学习 RPC">
 <meta name="twitter:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
-<meta name="twitter:image" content="http://gagharv-wangwei.github.io/images/spark-total.png">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
 
 
 
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/">
+  <link rel="canonical" href="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/">
 
 
 
@@ -329,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://gagharv-wangwei.github.io/2019/03/18/Spark学习-RPC/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -389,7 +389,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-27 17:09:33" itemprop="dateModified" datetime="2019-10-27T17:09:33+08:00">2019-10-27</time>
+                <time title="Modified: 2019-10-29 11:47:58" itemprop="dateModified" datetime="2019-10-29T11:47:58+08:00">2019-10-29</time>
               
             
           </span>
@@ -442,7 +442,7 @@
 
       
         <p>包含spark-network-common模块和spark-core中rpc部分</p>
-<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark-total.png" alt="spark各组件图"></p>
+<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark/spark-total.png" alt="spark各组件图"></p>
 <hr>
 <h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p>
 <ul>
@@ -461,8 +461,8 @@
 <hr>
 <h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><h3 id="1-StreamManager"><a href="#1-StreamManager" class="headerlink" title="1.StreamManager"></a>1.StreamManager</h3><p><code>NettyStreamManager</code> 用于提供NettyRpcEnv的文件流服务，可注册 文件、jar包和目录 三种资源，可以用来处理StreamRequest类型的消息</p>
 <hr>
-<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
-<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark-client.png" alt="client处理流程图"></p>
+<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark/spark-client.png" alt="client处理流程图"></p>
 <p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p>
 <p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>
 
@@ -583,7 +583,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -606,7 +606,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -633,7 +637,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -696,7 +702,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
