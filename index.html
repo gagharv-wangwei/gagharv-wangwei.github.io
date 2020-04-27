@@ -324,6 +324,186 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/27/Nacos-配置中心-逻辑架构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/27/Nacos-配置中心-逻辑架构/" class="post-title-link" itemprop="url">Nacos 配置中心-逻辑架构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-27 16:40:52 / Modified: 17:03:55" itemprop="dateCreated datePublished" datetime="2020-04-27T16:40:52+08:00">2020-04-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/云原生/" itemprop="url" rel="index"><span itemprop="name">云原生</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Nacos-配置中心介绍"><a href="#Nacos-配置中心介绍" class="headerlink" title="Nacos 配置中心介绍"></a>Nacos 配置中心介绍</h1><p><img src="/images/nacos/nacos-1-2.png" alt="nacos"></p>
+<h2 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h2><p>Nacos配置信息存储于<code>mysql</code>中，节点启动的时候会加载执行<code>DumpAllTask</code>等任务将数据加载进本地文件，而后记录md5值写入内存中</p>
+<blockquote>
+<p>内存存储MD5用于比对数据变更，文件存储配置信息，mysql用于保证数据可靠性</p>
+</blockquote>
+<h2 id="客户端数据获取"><a href="#客户端数据获取" class="headerlink" title="客户端数据获取"></a>客户端数据获取</h2><p>客户端监听配置变更只检查自身的配置md5是否与服务端<code>CACHE</code>中的md5相同，如果不同则从本地文件中获取配置内容，即<code>Mysql</code>不参与客户端配置获取的流程</p>
+<blockquote>
+<p>客户端数据获取只和CACHE和File有关，避免了mysql查询的耗时以及可靠性依赖</p>
+</blockquote>
+<h2 id="配置变更"><a href="#配置变更" class="headerlink" title="配置变更"></a>配置变更</h2><p>服务端接受到配置变更</p>
+<ol>
+<li>写入数据库</li>
+<li>向多有节点（包括自己）发送数据变更事件（如果有服务端挂了，则对应的服务端请求写入队列延后定期发送）</li>
+<li>客户端接收到事件变更提交一个<code>dumpTask</code>给<code>TaskManager</code></li>
+<li><code>TaskManager</code>定期检查事件，执行<code>dumpTask</code> 从mysql更新对应配置信息到文件以及内存中，并触发<code>LocalDataChangeEvent</code>事件</li>
+<li><code>LongPollingService</code>订阅了<code>LocalDataChangeEvent</code>事件，执行<code>DataChangeTask</code>任务，检查自身维护的<code>allSubs</code>（客户端请求列表）是否需要推送变更数据</li>
+</ol>
+<blockquote>
+<p>服务端是无状态的，配置的写入只需要保证写入mysql然后通知各自从mysql加载最新数据即可，由此客户端获取可能存在延迟</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/21/Nacos-配置中心-配置推送/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -511,7 +691,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/19/Nacos 配置中心-服务启动/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/19/Nacos-配置中心-服务启动/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -531,7 +711,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2020/04/19/Nacos 配置中心-服务启动/" class="post-title-link" itemprop="url">Nacos 配置中心--服务启动</a>
+                <a href="/2020/04/19/Nacos-配置中心-服务启动/" class="post-title-link" itemprop="url">Nacos 配置中心--服务启动</a>
               
             
           </h1>
@@ -573,7 +753,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-04-21 22:40:24" itemprop="dateModified" datetime="2020-04-21T22:40:24+08:00">2020-04-21</time>
+                <time title="Modified: 2020-04-27 16:38:52" itemprop="dateModified" datetime="2020-04-27T16:38:52+08:00">2020-04-27</time>
               
             
           </span>
@@ -1388,7 +1568,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
