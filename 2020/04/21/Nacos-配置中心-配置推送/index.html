@@ -96,22 +96,20 @@
 
 
 
-  <meta name="description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
-<meta name="keywords" content="spark,源码学习">
+  <meta name="description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
+<meta name="keywords" content="nacos">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spark学习 RPC">
-<meta property="og:url" content="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/index.html">
+<meta property="og:title" content="Nacos 配置中心--配置推送">
+<meta property="og:url" content="http://wangweizZZ.github.io/2020/04/21/Nacos-配置中心-配置推送/index.html">
 <meta property="og:site_name" content="gagharv">
-<meta property="og:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
+<meta property="og:description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
-<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-server.png">
-<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-client.png">
-<meta property="og:updated_time" content="2019-10-29T03:47:58.763Z">
+<meta property="og:image" content="http://wangweizzz.github.io/images/nacos/nacos-1-1.png">
+<meta property="og:updated_time" content="2020-04-27T08:32:43.893Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spark学习 RPC">
-<meta name="twitter:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
-<meta name="twitter:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
+<meta name="twitter:title" content="Nacos 配置中心--配置推送">
+<meta name="twitter:description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/nacos/nacos-1-1.png">
 
 
 
@@ -120,7 +118,7 @@
 
 
 
-  <link rel="canonical" href="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/">
+  <link rel="canonical" href="http://wangweizZZ.github.io/2020/04/21/Nacos-配置中心-配置推送/">
 
 
 
@@ -130,7 +128,7 @@
   };
 </script>
 
-  <title>Spark学习 RPC | gagharv</title>
+  <title>Nacos 配置中心--配置推送 | gagharv</title>
   
 
 
@@ -329,7 +327,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/03/18/Spark学习-RPC/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/21/Nacos-配置中心-配置推送/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -346,7 +344,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Spark学习 RPC
+          <h1 class="post-title" itemprop="name headline">Nacos 配置中心--配置推送
 
               
             
@@ -372,7 +370,7 @@
                 
               
 
-              <time title="Created: 2019-03-18 21:54:24" itemprop="dateCreated datePublished" datetime="2019-03-18T21:54:24+08:00">2019-03-18</time>
+              <time title="Created: 2020-04-21 18:13:03" itemprop="dateCreated datePublished" datetime="2020-04-21T18:13:03+08:00">2020-04-21</time>
             
 
             
@@ -389,7 +387,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-29 11:47:58" itemprop="dateModified" datetime="2019-10-29T11:47:58+08:00">2019-10-29</time>
+                <time title="Modified: 2020-04-27 16:32:43" itemprop="dateModified" datetime="2020-04-27T16:32:43+08:00">2020-04-27</time>
               
             
           </span>
@@ -406,7 +404,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/云原生/" itemprop="url" rel="index"><span itemprop="name">云原生</span></a></span>
 
                 
                 
@@ -441,30 +439,21 @@
       
 
       
-        <p>包含spark-network-common模块和spark-core中rpc部分</p>
-<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark/spark-total.png" alt="spark各组件图"></p>
-<hr>
-<h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p>
+        <h2 id="Nacos-配置推送"><a href="#Nacos-配置推送" class="headerlink" title="Nacos 配置推送"></a>Nacos 配置推送</h2><h3 id="配置获取"><a href="#配置获取" class="headerlink" title="配置获取"></a>配置获取</h3><p><strong>Nacos 采取长轮询的方式定期获取配置变更</strong></p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p><img src="/images/nacos/nacos-1-1.png" alt="nacos"><br>如图，客户端 维护一个<code>ClientWorker</code>类定期（默认每隔10ms) 去服务端获取配置变更事件<br>服务端获取到请求后将请求绑定到<code>LongPollingService#allSubs</code>上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果</p>
+<blockquote>
+<p>服务端存在两种阻塞方式</p>
 <ul>
-<li>TransportConf<br>配置文件</li>
-<li>RpcHandler<br>处理请求的netty handler<br>用于TransportClientFactory 创建TransportClient时调用initializePipeline方法包装成 TransportChannelHandler，TransportChannelHandler内部调用RpcHandler处理请求</li>
+<li>当isFixedPolling=true时，服务端始终等超时执行asyncTimeoutFuture进行数据检查并返回变更数据</li>
+<li>当isFixedPolling=false时(默认），服务端一旦配置变更，立即触发数据变更，并取消asyncTimeoutFuture</li>
 </ul>
-<h3 id="TransportClientFactory"><a href="#TransportClientFactory" class="headerlink" title="TransportClientFactory"></a>TransportClientFactory</h3><p>用于创建客户端连接的工厂类<br><code>createClient()</code> 方法用于创建nio客户端，并生成持有客户端Channel的TransportClient</p>
-<p>通过内部的<code>ClientPool</code>维护<code>TransportClient</code>数组<br>通过传入的<code>TransportContext</code>和<code>TransportClientBootstrap</code>创建<code>TransportClient</code>，均用于通过netty pipeline绑定 RpcHandler 、身份验证</p>
-<h3 id="TransportServer"><a href="#TransportServer" class="headerlink" title="TransportServer"></a>TransportServer</h3><p>服务器端<br>启动一个netty服务,类似<code>TransportClientFactory</code>当建立连接后创建一个<code>TransportClient</code>用于处理后续操作</p>
-<h3 id="TransportClient"><a href="#TransportClient" class="headerlink" title="TransportClient"></a>TransportClient</h3><p>通过持有对应连接<code>Channel</code>用于客户端服务端间消息发送</p>
-<hr>
-<h2 id="Spark-core-中RPC部分"><a href="#Spark-core-中RPC部分" class="headerlink" title="Spark-core 中RPC部分"></a>Spark-core 中RPC部分</h2><p>spark-core中的部分用于替换之前的akka。类似akka的actor模型</p>
-<h3 id="RpcEndpoint"><a href="#RpcEndpoint" class="headerlink" title="RpcEndpoint"></a>RpcEndpoint</h3><p>代表具体的通信节点</p>
-<h3 id="RpcEndPointRef"><a href="#RpcEndPointRef" class="headerlink" title="RpcEndPointRef"></a>RpcEndPointRef</h3><p>是对远程RpcEndpoint的一个引用，参考akka中actor模型设计</p>
-<h3 id="RpcEnv"><a href="#RpcEnv" class="headerlink" title="RpcEnv"></a>RpcEnv</h3><p>作为rpc的环境 <code>RpcEndpoint</code> 注册到该对象上<br>通过 <code>new NettyRpcEnvFactory().create(config)</code> 创建具体的实现类<code>NettyRpcEnv</code></p>
-<hr>
-<h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><h3 id="1-StreamManager"><a href="#1-StreamManager" class="headerlink" title="1.StreamManager"></a>1.StreamManager</h3><p><code>NettyStreamManager</code> 用于提供NettyRpcEnv的文件流服务，可注册 文件、jar包和目录 三种资源，可以用来处理StreamRequest类型的消息</p>
-<hr>
-<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
-<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark/spark-client.png" alt="client处理流程图"></p>
-<p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p>
-<p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClientLongPolling</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">           asyncTimeoutFuture = scheduler.schedule(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                   <span class="keyword">try</span> &#123;</span><br><span class="line">                       ...</span><br><span class="line">                       <span class="comment">//移除订阅关系</span></span><br><span class="line">                       allSubs.remove(ClientLongPolling.<span class="keyword">this</span>);</span><br><span class="line">                       <span class="comment">//如果是固定轮询，则即便时间内收到配置变更也不返回，又该future到时间统一检查数据是否变更</span></span><br><span class="line">                       <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">                           ...</span><br><span class="line">                           <span class="keyword">if</span> (changedGroups.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                               sendResponse(changedGroups);</span><br><span class="line">                           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                               sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                           &#125;</span><br><span class="line">                       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                          ...</span><br><span class="line">                          <span class="comment">//非固定轮询，由配置变更事件返回变更，此处超时不检查数据是否变更</span></span><br><span class="line">                           sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                      ...</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">           <span class="comment">//绑定到allSubs上</span></span><br><span class="line">           allSubs.add(<span class="keyword">this</span>);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端接收到配置修改的请求，写入数据库而后触发<code>ConfigDataChangeEvent</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 写入数据库</span></span><br><span class="line">persistService.insertOrUpdate(srcIp, srcUser, configInfo, time, configAdvanceInfo, <span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//2. 触发 ConfigDataChangeEvent</span></span><br><span class="line">EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">false</span>, dataId, group, tenant, time.getTime()));</span><br></pre></td></tr></table></figure></p>
+<p>AsyncNotifyService 订阅了<code>ConfigDataChangeEvent</code>事件，依次向所有服务端发送数据库变更事件，促使所有服务端从mysql更新数据，并检查各自<code>allSubs</code>连接的客户端，返回response<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (event <span class="keyword">instanceof</span> ConfigDataChangeEvent) &#123;</span><br><span class="line">    ConfigDataChangeEvent evt = (ConfigDataChangeEvent) event;</span><br><span class="line">    ...</span><br><span class="line">    Queue&lt;NotifySingleTask&gt; queue = <span class="keyword">new</span> LinkedList&lt;NotifySingleTask&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ipList.size(); i++) &#123;</span><br><span class="line">        queue.add(<span class="keyword">new</span> NotifySingleTask(dataId, group, tenant, tag, dumpTs, (String) ipList.get(i), evt.isBeta));</span><br><span class="line">    &#125;</span><br><span class="line">    EXECUTOR.execute(<span class="keyword">new</span> AsyncTask(httpclient, queue));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>综上: 客户端定期轮询拉取等待返回结果，服务端在轮询周期内等待数据变更事件，如发生则立刻返回已达到配置变更后尽快获取到配置变更的效果</p>
+</blockquote>
 
       
     </div>
@@ -488,9 +477,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/spark/" rel="tag"><i class="fa fa-tag"></i> spark</a>
-          
-            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
+            <a href="/tags/nacos/" rel="tag"><i class="fa fa-tag"></i> nacos</a>
           
         </div>
       
@@ -503,15 +490,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2020/04/19/Nacos 配置中心-服务启动/" rel="next" title="Nacos 配置中心--服务启动">
+                <i class="fa fa-chevron-left"></i> Nacos 配置中心--服务启动
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/10/21/rocketmq-nameserver/" rel="prev" title="RocketMQ NameServer">
-                RocketMQ NameServer <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -682,7 +669,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#组件架构"><span class="nav-number">1.</span> <span class="nav-text">组件架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核心组件"><span class="nav-number">2.</span> <span class="nav-text">核心组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spark-network-common-部分"><span class="nav-number">2.1.</span> <span class="nav-text">spark-network-common 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportContext"><span class="nav-number">2.1.1.</span> <span class="nav-text">TransportContext</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClientFactory"><span class="nav-number">2.1.2.</span> <span class="nav-text">TransportClientFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportServer"><span class="nav-number">2.1.3.</span> <span class="nav-text">TransportServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClient"><span class="nav-number">2.1.4.</span> <span class="nav-text">TransportClient</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark-core-中RPC部分"><span class="nav-number">2.2.</span> <span class="nav-text">Spark-core 中RPC部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndpoint"><span class="nav-number">2.2.1.</span> <span class="nav-text">RpcEndpoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndPointRef"><span class="nav-number">2.2.2.</span> <span class="nav-text">RpcEndPointRef</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEnv"><span class="nav-number">2.2.3.</span> <span class="nav-text">RpcEnv</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">2.3.</span> <span class="nav-text">其他补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-StreamManager"><span class="nav-number">2.3.1.</span> <span class="nav-text">1.StreamManager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理过程"><span class="nav-number">3.</span> <span class="nav-text">处理过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Server"><span class="nav-number">3.1.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client"><span class="nav-number">3.2.</span> <span class="nav-text">Client</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nacos-配置推送"><span class="nav-number">1.</span> <span class="nav-text">Nacos 配置推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置获取"><span class="nav-number">1.1.</span> <span class="nav-text">配置获取</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端"><span class="nav-number">1.1.1.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端"><span class="nav-number">1.1.2.</span> <span class="nav-text">服务端</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>

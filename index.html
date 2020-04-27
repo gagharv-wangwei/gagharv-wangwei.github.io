@@ -324,6 +324,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/21/Nacos-配置中心-配置推送/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/21/Nacos-配置中心-配置推送/" class="post-title-link" itemprop="url">Nacos 配置中心--配置推送</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-21 18:13:03" itemprop="dateCreated datePublished" datetime="2020-04-21T18:13:03+08:00">2020-04-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-27 16:32:43" itemprop="dateModified" datetime="2020-04-27T16:32:43+08:00">2020-04-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/云原生/" itemprop="url" rel="index"><span itemprop="name">云原生</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Nacos-配置推送"><a href="#Nacos-配置推送" class="headerlink" title="Nacos 配置推送"></a>Nacos 配置推送</h2><h3 id="配置获取"><a href="#配置获取" class="headerlink" title="配置获取"></a>配置获取</h3><p><strong>Nacos 采取长轮询的方式定期获取配置变更</strong></p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p><img src="/images/nacos/nacos-1-1.png" alt="nacos"><br>如图，客户端 维护一个<code>ClientWorker</code>类定期（默认每隔10ms) 去服务端获取配置变更事件<br>服务端获取到请求后将请求绑定到<code>LongPollingService#allSubs</code>上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果</p>
+<blockquote>
+<p>服务端存在两种阻塞方式</p>
+<ul>
+<li>当isFixedPolling=true时，服务端始终等超时执行asyncTimeoutFuture进行数据检查并返回变更数据</li>
+<li>当isFixedPolling=false时(默认），服务端一旦配置变更，立即触发数据变更，并取消asyncTimeoutFuture</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClientLongPolling</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">           asyncTimeoutFuture = scheduler.schedule(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                   <span class="keyword">try</span> &#123;</span><br><span class="line">                       ...</span><br><span class="line">                       <span class="comment">//移除订阅关系</span></span><br><span class="line">                       allSubs.remove(ClientLongPolling.<span class="keyword">this</span>);</span><br><span class="line">                       <span class="comment">//如果是固定轮询，则即便时间内收到配置变更也不返回，又该future到时间统一检查数据是否变更</span></span><br><span class="line">                       <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">                           ...</span><br><span class="line">                           <span class="keyword">if</span> (changedGroups.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                               sendResponse(changedGroups);</span><br><span class="line">                           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                               sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                           &#125;</span><br><span class="line">                       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                          ...</span><br><span class="line">                          <span class="comment">//非固定轮询，由配置变更事件返回变更，此处超时不检查数据是否变更</span></span><br><span class="line">                           sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                      ...</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">           <span class="comment">//绑定到allSubs上</span></span><br><span class="line">           allSubs.add(<span class="keyword">this</span>);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端接收到配置修改的请求，写入数据库而后触发<code>ConfigDataChangeEvent</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 写入数据库</span></span><br><span class="line">persistService.insertOrUpdate(srcIp, srcUser, configInfo, time, configAdvanceInfo, <span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//2. 触发 ConfigDataChangeEvent</span></span><br><span class="line">EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">false</span>, dataId, group, tenant, time.getTime()));</span><br></pre></td></tr></table></figure></p>
+<p>AsyncNotifyService 订阅了<code>ConfigDataChangeEvent</code>事件，依次向所有服务端发送数据库变更事件，促使所有服务端从mysql更新数据，并检查各自<code>allSubs</code>连接的客户端，返回response<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (event <span class="keyword">instanceof</span> ConfigDataChangeEvent) &#123;</span><br><span class="line">    ConfigDataChangeEvent evt = (ConfigDataChangeEvent) event;</span><br><span class="line">    ...</span><br><span class="line">    Queue&lt;NotifySingleTask&gt; queue = <span class="keyword">new</span> LinkedList&lt;NotifySingleTask&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ipList.size(); i++) &#123;</span><br><span class="line">        queue.add(<span class="keyword">new</span> NotifySingleTask(dataId, group, tenant, tag, dumpTs, (String) ipList.get(i), evt.isBeta));</span><br><span class="line">    &#125;</span><br><span class="line">    EXECUTOR.execute(<span class="keyword">new</span> AsyncTask(httpclient, queue));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>综上: 客户端定期轮询拉取等待返回结果，服务端在轮询周期内等待数据变更事件，如发生则立刻返回已达到配置变更后尽快获取到配置变更的效果</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/19/Nacos 配置中心-服务启动/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1201,7 +1388,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
