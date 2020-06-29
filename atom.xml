@@ -196,9 +196,9 @@
       <category term="大数据" scheme="http://wangweizZZ.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
     
-      <category term="spark" scheme="http://wangweizZZ.github.io/tags/spark/"/>
-    
       <category term="源码学习" scheme="http://wangweizZZ.github.io/tags/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="spark" scheme="http://wangweizZZ.github.io/tags/spark/"/>
     
   </entry>
   
