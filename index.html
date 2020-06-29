@@ -324,6 +324,237 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/06/26/Disruptor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/06/26/Disruptor/" class="post-title-link" itemprop="url">Disruptor</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-06-26 15:53:14" itemprop="dateCreated datePublished" datetime="2020-06-26T15:53:14+08:00">2020-06-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-29 17:06:41" itemprop="dateModified" datetime="2020-06-29T17:06:41+08:00">2020-06-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Disruptor 环形缓冲队列，可用于<strong>生产者-消费者</strong>模型下的高性能队列使用</p>
+<p>在<strong>生产者-消费者</strong>模型下</p>
+<ul>
+<li>生产者不停地往队列里面生产新的需要处理的任务</li>
+<li>消费者不停地从队列里面处理掉这些任务</li>
+</ul>
+<p>为了保证多线程并发访问下的数据准确性，通常我们可以需要借助锁或者直接使用基于锁的线程安全集合，如<code>ArrayBlockingQueue</code>，<code>LinkedBlockingQueue</code>等。</p>
+<p>而Disruptor能够提供极细粒度的CAS甚至无锁化的队列，并针对CPU指令做了一些性能优化，从而大大提高了性能</p>
+<h2 id="RingBuffer"><a href="#RingBuffer" class="headerlink" title="RingBuffer"></a>RingBuffer</h2><p>基于数组的环形缓冲区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//bufferSize - 1 用于内存位置计算</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> indexMask;</span><br><span class="line"><span class="comment">//数据 基于数组实现</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Object[] entries;</span><br><span class="line"><span class="comment">//缓冲区大小</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Sequencer sequencer;</span><br></pre></td></tr></table></figure>
+<p>RingBuffer 创建</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RingBuffer.create(</span><br><span class="line">        ProducerType producerType,</span><br><span class="line">        EventFactory&lt;E&gt; factory,</span><br><span class="line">        <span class="keyword">int</span> bufferSize,</span><br><span class="line">        WaitStrategy waitStrategy</span><br></pre></td></tr></table></figure>
+<p>ProducerType</p>
+<ul>
+<li>SINGLE 单生产者模式</li>
+<li>MULTI 多生产者模式</li>
+</ul>
+<p>EventFactory 事件工厂,初始化RingBuffer 时需要将对象填充到数组中</p>
+<p>WaitStrategy 消费者消费的阻塞策略</p>
+<h2 id="Sequencer"><a href="#Sequencer" class="headerlink" title="Sequencer"></a>Sequencer</h2><p>核心类，协调写入和读取</p>
+<blockquote>
+<p>存储写入进度相关</p>
+</blockquote>
+<blockquote>
+<p>其抽象实现类<code>AbstractSequencer</code> 通过维护<br>消费者进度 <code>Sequence[]</code>来影响写入（消费者未及时消费导致队列满了，则阻塞写入）</p>
+</blockquote>
+<blockquote>
+<p>SequenceBarrier 通过持有Sequencer从而控制消费者消费</p>
+</blockquote>
+<ul>
+<li><p>SingleProducerSequencer<br>单生产者,单生产者的情况下，不需要像多线程那样去CAS竞争判断</p>
+</li>
+<li><p>MultiProducerSequencer<br>多生产者</p>
+</li>
+</ul>
+<h3 id="SingleProducerSequencer"><a href="#SingleProducerSequencer" class="headerlink" title="SingleProducerSequencer"></a>SingleProducerSequencer</h3><p>使用基本类型long去缓存 nextValue、cachedValue 即游标信息</p>
+<p>发布事件通过<code>cursor</code> 记录位置</p>
+<h3 id="MultiProducerSequencer"><a href="#MultiProducerSequencer" class="headerlink" title="MultiProducerSequencer"></a>MultiProducerSequencer</h3><p>使用Sequence对象去缓存 nextValue、cachedValue 即游标信息<br>且在获取的时候需要CAS判断竞争</p>
+<p>发布事件通过<code>availableBuffer</code> 记录位置</p>
+<h2 id="生产数据"><a href="#生产数据" class="headerlink" title="生产数据"></a>生产数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.获取序号</span></span><br><span class="line"><span class="keyword">long</span> sequence = ringBuffer.next();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 2.取出空队列</span></span><br><span class="line">    LongEvent longEvent = ringBuffer.get(sequence);</span><br><span class="line">    <span class="comment">// 3.给空队列赋值</span></span><br><span class="line">    longEvent.setValue(byteBuffer.getLong(<span class="number">0</span>));</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// 4.发布数据</span></span><br><span class="line">    ringBuffer.publish(sequence);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取sequenceId<br><code>gatingSequences</code> 是消费者Sequence集合sequenceId<br>通过对比消费者进度，当队列满了的时候执行 阻塞获取<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (wrapPoint &gt; (minSequence = Util.getMinimumSequence(gatingSequences, nextValue)))</span><br><span class="line">&#123;</span><br><span class="line">    LockSupport.parkNanos(<span class="number">1L</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="消费数据"><a href="#消费数据" class="headerlink" title="消费数据"></a>消费数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Disruptor&lt;LongEvent&gt; disruptor = <span class="keyword">new</span> Disruptor&lt;&gt;(</span><br><span class="line">        longEventFactory, ringbuffer, executor,</span><br><span class="line">        ProducerType.SINGLE, <span class="keyword">new</span> BlockingWaitStrategy()</span><br><span class="line">    );</span><br><span class="line">disruptor.handleEventsWith(<span class="keyword">new</span> EventHandler&lt;LongEvent&gt;()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(LongEvent longEvent, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"消费者获得数据:"</span> + longEvent.getValue());</span><br><span class="line">    &#125;&#125;</span><br><span class="line">);</span><br><span class="line"><span class="comment">// longEventDisruptor.handleEventsWithWorkerPool(new WorkHandler&lt;LongEvent&gt;() &#123;</span></span><br><span class="line"><span class="comment">//     @Override</span></span><br><span class="line"><span class="comment">//         public void onEvent(LongEvent longEvent) throws Exception &#123;</span></span><br><span class="line"><span class="comment">//         &#125;</span></span><br><span class="line"><span class="comment">//     &#125;);</span></span><br><span class="line">disruptor.start()</span><br></pre></td></tr></table></figure>
+<p>消费者们通过<code>SequenceBarrier</code>获取事件</p>
+<p>通过向 Disruptor 对象的<code>ConsumerRepository</code>上绑定处理逻辑，<code>start()</code>后触发消费者线程消费</p>
+<ul>
+<li><p>BatchEventProcessor<br>广播事件</p>
+</li>
+<li><p>WorkProcessor<br>仅仅向同一组消费者之一发送</p>
+</li>
+</ul>
+<p><img src="/images/disrputor/disruptor-1-1.jpeg" alt="流程图"></p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="缓存行填充"><a href="#缓存行填充" class="headerlink" title="缓存行填充"></a>缓存行填充</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RingBufferPad</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">long</span> p1, p2, p3, p4, p5, p6, p7;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/disrputor/disruptor-1-2.png" alt="缓冲行"></p>
+<p>为了增加<strong>CPU Cache</strong>的缓存命中率从而提高性能，添加缓冲行，避免由于其他变量的变化而影响到目标变量的缓存失效</p>
+<blockquote>
+<p>命中CPU L1、L2、L3 1ns~20ns ，未命中 则需要 80ns左右</p>
+</blockquote>
+<h3 id="CPU指令"><a href="#CPU指令" class="headerlink" title="CPU指令"></a>CPU指令</h3><p>Disruptor 有很多UNSAFE的指令级别操作</p>
+<p>如 <code>UNSAFE.putOrderedInt</code>,<code>UNSAFE.putLongVolatile</code> 去控制内存屏障等</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/27/Nacos-配置中心-逻辑架构/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -965,7 +1196,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-01-20 17:10:15" itemprop="dateModified" datetime="2020-01-20T17:10:15+08:00">2020-01-20</time>
+                <time title="Modified: 2020-06-26 15:52:38" itemprop="dateModified" datetime="2020-06-26T15:52:38+08:00">2020-06-26</time>
               
             
           </span>
@@ -982,7 +1213,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程语言/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/消息队列/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a></span>
 
                 
                 
@@ -1568,7 +1799,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1580,6 +1811,8 @@
                 <div class="site-state-item site-state-categories">
                   <a href="/categories/index.html">
                     
+                    
+                      
                     
                       
                     

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="简介Disruptor 环形缓冲队列，可用于生产者-消费者模型下的高性能队列使用 在生产者-消费者模型下  生产者不停地往队列里面生产新的需要处理的任务 消费者不停地从队列里面处理掉这些任务  为了保证多线程并发访问下的数据准确性，通常我们可以需要借助锁或者直接使用基于锁的线程安全集合，如ArrayBlockingQueue，LinkedBlockingQueue等。 而Disruptor能够提供">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Disruptor">
+<meta property="og:url" content="http://wangweizZZ.github.io/2020/06/26/Disruptor/index.html">
+<meta property="og:site_name" content="gagharv">
+<meta property="og:description" content="简介Disruptor 环形缓冲队列，可用于生产者-消费者模型下的高性能队列使用 在生产者-消费者模型下  生产者不停地往队列里面生产新的需要处理的任务 消费者不停地从队列里面处理掉这些任务  为了保证多线程并发访问下的数据准确性，通常我们可以需要借助锁或者直接使用基于锁的线程安全集合，如ArrayBlockingQueue，LinkedBlockingQueue等。 而Disruptor能够提供">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://wangweizzz.github.io/images/disrputor/disruptor-1-1.jpeg">
+<meta property="og:image" content="http://wangweizzz.github.io/images/disrputor/disruptor-1-2.png">
+<meta property="og:updated_time" content="2020-06-29T09:06:41.674Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Disruptor">
+<meta name="twitter:description" content="简介Disruptor 环形缓冲队列，可用于生产者-消费者模型下的高性能队列使用 在生产者-消费者模型下  生产者不停地往队列里面生产新的需要处理的任务 消费者不停地从队列里面处理掉这些任务  为了保证多线程并发访问下的数据准确性，通常我们可以需要借助锁或者直接使用基于锁的线程安全集合，如ArrayBlockingQueue，LinkedBlockingQueue等。 而Disruptor能够提供">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/disrputor/disruptor-1-1.jpeg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="gagharv" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://wangweizZZ.github.io/2020/06/26/Disruptor/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Disruptor | gagharv</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">gagharv</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/06/26/Disruptor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wang wei">
+      <meta itemprop="description" content="写着玩">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="gagharv">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Disruptor
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-06-26 15:53:14" itemprop="dateCreated datePublished" datetime="2020-06-26T15:53:14+08:00">2020-06-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-29 17:06:41" itemprop="dateModified" datetime="2020-06-29T17:06:41+08:00">2020-06-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据结构/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Disruptor 环形缓冲队列，可用于<strong>生产者-消费者</strong>模型下的高性能队列使用</p>
+<p>在<strong>生产者-消费者</strong>模型下</p>
+<ul>
+<li>生产者不停地往队列里面生产新的需要处理的任务</li>
+<li>消费者不停地从队列里面处理掉这些任务</li>
+</ul>
+<p>为了保证多线程并发访问下的数据准确性，通常我们可以需要借助锁或者直接使用基于锁的线程安全集合，如<code>ArrayBlockingQueue</code>，<code>LinkedBlockingQueue</code>等。</p>
+<p>而Disruptor能够提供极细粒度的CAS甚至无锁化的队列，并针对CPU指令做了一些性能优化，从而大大提高了性能</p>
+<h2 id="RingBuffer"><a href="#RingBuffer" class="headerlink" title="RingBuffer"></a>RingBuffer</h2><p>基于数组的环形缓冲区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//bufferSize - 1 用于内存位置计算</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> indexMask;</span><br><span class="line"><span class="comment">//数据 基于数组实现</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Object[] entries;</span><br><span class="line"><span class="comment">//缓冲区大小</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Sequencer sequencer;</span><br></pre></td></tr></table></figure>
+<p>RingBuffer 创建</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RingBuffer.create(</span><br><span class="line">        ProducerType producerType,</span><br><span class="line">        EventFactory&lt;E&gt; factory,</span><br><span class="line">        <span class="keyword">int</span> bufferSize,</span><br><span class="line">        WaitStrategy waitStrategy</span><br></pre></td></tr></table></figure>
+<p>ProducerType</p>
+<ul>
+<li>SINGLE 单生产者模式</li>
+<li>MULTI 多生产者模式</li>
+</ul>
+<p>EventFactory 事件工厂,初始化RingBuffer 时需要将对象填充到数组中</p>
+<p>WaitStrategy 消费者消费的阻塞策略</p>
+<h2 id="Sequencer"><a href="#Sequencer" class="headerlink" title="Sequencer"></a>Sequencer</h2><p>核心类，协调写入和读取</p>
+<blockquote>
+<p>存储写入进度相关</p>
+</blockquote>
+<blockquote>
+<p>其抽象实现类<code>AbstractSequencer</code> 通过维护<br>消费者进度 <code>Sequence[]</code>来影响写入（消费者未及时消费导致队列满了，则阻塞写入）</p>
+</blockquote>
+<blockquote>
+<p>SequenceBarrier 通过持有Sequencer从而控制消费者消费</p>
+</blockquote>
+<ul>
+<li><p>SingleProducerSequencer<br>单生产者,单生产者的情况下，不需要像多线程那样去CAS竞争判断</p>
+</li>
+<li><p>MultiProducerSequencer<br>多生产者</p>
+</li>
+</ul>
+<h3 id="SingleProducerSequencer"><a href="#SingleProducerSequencer" class="headerlink" title="SingleProducerSequencer"></a>SingleProducerSequencer</h3><p>使用基本类型long去缓存 nextValue、cachedValue 即游标信息</p>
+<p>发布事件通过<code>cursor</code> 记录位置</p>
+<h3 id="MultiProducerSequencer"><a href="#MultiProducerSequencer" class="headerlink" title="MultiProducerSequencer"></a>MultiProducerSequencer</h3><p>使用Sequence对象去缓存 nextValue、cachedValue 即游标信息<br>且在获取的时候需要CAS判断竞争</p>
+<p>发布事件通过<code>availableBuffer</code> 记录位置</p>
+<h2 id="生产数据"><a href="#生产数据" class="headerlink" title="生产数据"></a>生产数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.获取序号</span></span><br><span class="line"><span class="keyword">long</span> sequence = ringBuffer.next();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 2.取出空队列</span></span><br><span class="line">    LongEvent longEvent = ringBuffer.get(sequence);</span><br><span class="line">    <span class="comment">// 3.给空队列赋值</span></span><br><span class="line">    longEvent.setValue(byteBuffer.getLong(<span class="number">0</span>));</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// 4.发布数据</span></span><br><span class="line">    ringBuffer.publish(sequence);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取sequenceId<br><code>gatingSequences</code> 是消费者Sequence集合sequenceId<br>通过对比消费者进度，当队列满了的时候执行 阻塞获取<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (wrapPoint &gt; (minSequence = Util.getMinimumSequence(gatingSequences, nextValue)))</span><br><span class="line">&#123;</span><br><span class="line">    LockSupport.parkNanos(<span class="number">1L</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="消费数据"><a href="#消费数据" class="headerlink" title="消费数据"></a>消费数据</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Disruptor&lt;LongEvent&gt; disruptor = <span class="keyword">new</span> Disruptor&lt;&gt;(</span><br><span class="line">        longEventFactory, ringbuffer, executor,</span><br><span class="line">        ProducerType.SINGLE, <span class="keyword">new</span> BlockingWaitStrategy()</span><br><span class="line">    );</span><br><span class="line">disruptor.handleEventsWith(<span class="keyword">new</span> EventHandler&lt;LongEvent&gt;()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEvent</span><span class="params">(LongEvent longEvent, <span class="keyword">long</span> sequence, <span class="keyword">boolean</span> endOfBatch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"消费者获得数据:"</span> + longEvent.getValue());</span><br><span class="line">    &#125;&#125;</span><br><span class="line">);</span><br><span class="line"><span class="comment">// longEventDisruptor.handleEventsWithWorkerPool(new WorkHandler&lt;LongEvent&gt;() &#123;</span></span><br><span class="line"><span class="comment">//     @Override</span></span><br><span class="line"><span class="comment">//         public void onEvent(LongEvent longEvent) throws Exception &#123;</span></span><br><span class="line"><span class="comment">//         &#125;</span></span><br><span class="line"><span class="comment">//     &#125;);</span></span><br><span class="line">disruptor.start()</span><br></pre></td></tr></table></figure>
+<p>消费者们通过<code>SequenceBarrier</code>获取事件</p>
+<p>通过向 Disruptor 对象的<code>ConsumerRepository</code>上绑定处理逻辑，<code>start()</code>后触发消费者线程消费</p>
+<ul>
+<li><p>BatchEventProcessor<br>广播事件</p>
+</li>
+<li><p>WorkProcessor<br>仅仅向同一组消费者之一发送</p>
+</li>
+</ul>
+<p><img src="/images/disrputor/disruptor-1-1.jpeg" alt="流程图"></p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="缓存行填充"><a href="#缓存行填充" class="headerlink" title="缓存行填充"></a>缓存行填充</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RingBufferPad</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">long</span> p1, p2, p3, p4, p5, p6, p7;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/disrputor/disruptor-1-2.png" alt="缓冲行"></p>
+<p>为了增加<strong>CPU Cache</strong>的缓存命中率从而提高性能，添加缓冲行，避免由于其他变量的变化而影响到目标变量的缓存失效</p>
+<blockquote>
+<p>命中CPU L1、L2、L3 1ns~20ns ，未命中 则需要 80ns左右</p>
+</blockquote>
+<h3 id="CPU指令"><a href="#CPU指令" class="headerlink" title="CPU指令"></a>CPU指令</h3><p>Disruptor 有很多UNSAFE的指令级别操作</p>
+<p>如 <code>UNSAFE.putOrderedInt</code>,<code>UNSAFE.putLongVolatile</code> 去控制内存屏障等</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/27/Nacos-配置中心-逻辑架构/" rel="next" title="Nacos 配置中心-逻辑架构">
+                <i class="fa fa-chevron-left"></i> Nacos 配置中心-逻辑架构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.gif" alt="wang wei">
+            
+              <p class="site-author-name" itemprop="name">wang wei</p>
+              <p class="site-description motion-element" itemprop="description">写着玩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RingBuffer"><span class="nav-number">2.</span> <span class="nav-text">RingBuffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sequencer"><span class="nav-number">3.</span> <span class="nav-text">Sequencer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SingleProducerSequencer"><span class="nav-number">3.1.</span> <span class="nav-text">SingleProducerSequencer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MultiProducerSequencer"><span class="nav-number">3.2.</span> <span class="nav-text">MultiProducerSequencer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产数据"><span class="nav-number">4.</span> <span class="nav-text">生产数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费数据"><span class="nav-number">5.</span> <span class="nav-text">消费数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存行填充"><span class="nav-number">6.1.</span> <span class="nav-text">缓存行填充</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU指令"><span class="nav-number">6.2.</span> <span class="nav-text">CPU指令</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wang wei</span>
+
+  
+
+  
+</div>
+<!--
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+-->
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
