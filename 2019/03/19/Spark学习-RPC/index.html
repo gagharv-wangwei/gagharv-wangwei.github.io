@@ -96,18 +96,22 @@
 
 
 
-  <meta name="description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
-<meta name="keywords" content="源码学习,rocketmq">
+  <meta name="description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
+<meta name="keywords" content="spark,源码学习">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RocketMQ NameServer">
-<meta property="og:url" content="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/index.html">
+<meta property="og:title" content="Spark学习 RPC">
+<meta property="og:url" content="http://wangweizZZ.github.io/2019/03/19/Spark学习-RPC/index.html">
 <meta property="og:site_name" content="gagharv">
-<meta property="og:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
+<meta property="og:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-27T09:17:14.102Z">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-server.png">
+<meta property="og:image" content="http://wangweizzz.github.io/images/spark/spark-client.png">
+<meta property="og:updated_time" content="2019-10-29T03:47:58.763Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RocketMQ NameServer">
-<meta name="twitter:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
+<meta name="twitter:title" content="Spark学习 RPC">
+<meta name="twitter:description" content="包含spark-network-common模块和spark-core中rpc部分 组件架构  核心组件spark-network-common 部分TransportContext传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory  TransportConf配置文件 RpcHandler处理请求的netty">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/spark/spark-total.png">
 
 
 
@@ -116,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/">
+  <link rel="canonical" href="http://wangweizZZ.github.io/2019/03/19/Spark学习-RPC/">
 
 
 
@@ -126,7 +130,7 @@
   };
 </script>
 
-  <title>RocketMQ NameServer | gagharv</title>
+  <title>Spark学习 RPC | gagharv</title>
   
 
 
@@ -325,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/03/19/Spark学习-RPC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -342,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">RocketMQ NameServer
+          <h1 class="post-title" itemprop="name headline">Spark学习 RPC
 
               
             
@@ -368,7 +372,7 @@
                 
               
 
-              <time title="Created: 2019-10-21 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-21T09:48:37Z">2019-10-21</time>
+              <time title="Created: 2019-03-18 21:54:24" itemprop="dateCreated datePublished" datetime="2019-03-18T21:54:24Z">2019-03-18</time>
             
 
             
@@ -385,7 +389,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-27 09:17:14" itemprop="dateModified" datetime="2019-10-27T09:17:14Z">2019-10-27</time>
+                <time title="Modified: 2019-10-29 03:47:58" itemprop="dateModified" datetime="2019-10-29T03:47:58Z">2019-10-29</time>
               
             
           </span>
@@ -402,7 +406,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/消息队列/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a></span>
 
                 
                 
@@ -437,35 +441,30 @@
       
 
       
-        <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol>
-<li>Brokers 定期更新metadata</li>
-<li>提供客户端(包含生产者，消费者) 最新路由信息</li>
-</ol>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><blockquote>
-<p>NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件</p>
-</blockquote>
-<h3 id="KVConfigManager"><a href="#KVConfigManager" class="headerlink" title="KVConfigManager"></a>KVConfigManager</h3><p>kv键值对管理 ,内部维护一个HashMap支持数据持久化到文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String<span class="comment">/* Namespace */</span>, HashMap&lt;String<span class="comment">/* Key */</span>, String<span class="comment">/* Value */</span>&gt;&gt; configTable =</span><br><span class="line">    <span class="keyword">new</span> HashMap&lt;String, HashMap&lt;String, String&gt;&gt;();</span><br></pre></td></tr></table></figure></p>
-<h3 id="RouteInfoManager"><a href="#RouteInfoManager" class="headerlink" title="RouteInfoManager"></a>RouteInfoManager</h3><p>存储broker列表，topic信息，通过注册<code>BrokerHousekeepingService</code>到netty 处理链上处理对应连接关闭、Idle事件</p>
-<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><blockquote>
-<p>NamesrvStartup.main()</p>
-</blockquote>
-<ol>
-<li>创建 NamesrvController ，传入 NamesrvConfig、NettyServerConfig</li>
-<li>controller.initialize() <ul>
-<li>kvConfigManager 加载配置</li>
-<li>NettyRemotingServer 初始化</li>
-<li>注册netty处理逻辑</li>
-<li>开启间隔10s的定时任务 调用<code>routeInfoManager</code>扫描不可用的broker 关闭channel</li>
-<li>开启间隔10s的定时任务 调用<code>kvConfigManager</code>打印配置信息</li>
-<li>ssl模式下对文件ssl文件监控，变化则调用<code>reloadServerSslContext()</code>刷新Sslcontext</li>
+        <p>包含spark-network-common模块和spark-core中rpc部分</p>
+<h1 id="组件架构"><a href="#组件架构" class="headerlink" title="组件架构"></a>组件架构</h1><p><img src="/images/spark/spark-total.png" alt="spark各组件图"></p>
+<hr>
+<h1 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h1><h2 id="spark-network-common-部分"><a href="#spark-network-common-部分" class="headerlink" title="spark-network-common 部分"></a>spark-network-common 部分</h2><h3 id="TransportContext"><a href="#TransportContext" class="headerlink" title="TransportContext"></a>TransportContext</h3><p>传输上下文，包含 TransportConf配置信息，可创建TransportServer以及TransportClientFactory</p>
+<ul>
+<li>TransportConf<br>配置文件</li>
+<li>RpcHandler<br>处理请求的netty handler<br>用于TransportClientFactory 创建TransportClient时调用initializePipeline方法包装成 TransportChannelHandler，TransportChannelHandler内部调用RpcHandler处理请求</li>
 </ul>
-</li>
-<li>controller.start()<ul>
-<li><code>NettyRemotingServer</code> start()</li>
-<li>ssl模式文件监控开启</li>
-</ul>
-</li>
-</ol>
+<h3 id="TransportClientFactory"><a href="#TransportClientFactory" class="headerlink" title="TransportClientFactory"></a>TransportClientFactory</h3><p>用于创建客户端连接的工厂类<br><code>createClient()</code> 方法用于创建nio客户端，并生成持有客户端Channel的TransportClient</p>
+<p>通过内部的<code>ClientPool</code>维护<code>TransportClient</code>数组<br>通过传入的<code>TransportContext</code>和<code>TransportClientBootstrap</code>创建<code>TransportClient</code>，均用于通过netty pipeline绑定 RpcHandler 、身份验证</p>
+<h3 id="TransportServer"><a href="#TransportServer" class="headerlink" title="TransportServer"></a>TransportServer</h3><p>服务器端<br>启动一个netty服务,类似<code>TransportClientFactory</code>当建立连接后创建一个<code>TransportClient</code>用于处理后续操作</p>
+<h3 id="TransportClient"><a href="#TransportClient" class="headerlink" title="TransportClient"></a>TransportClient</h3><p>通过持有对应连接<code>Channel</code>用于客户端服务端间消息发送</p>
+<hr>
+<h2 id="Spark-core-中RPC部分"><a href="#Spark-core-中RPC部分" class="headerlink" title="Spark-core 中RPC部分"></a>Spark-core 中RPC部分</h2><p>spark-core中的部分用于替换之前的akka。类似akka的actor模型</p>
+<h3 id="RpcEndpoint"><a href="#RpcEndpoint" class="headerlink" title="RpcEndpoint"></a>RpcEndpoint</h3><p>代表具体的通信节点</p>
+<h3 id="RpcEndPointRef"><a href="#RpcEndPointRef" class="headerlink" title="RpcEndPointRef"></a>RpcEndPointRef</h3><p>是对远程RpcEndpoint的一个引用，参考akka中actor模型设计</p>
+<h3 id="RpcEnv"><a href="#RpcEnv" class="headerlink" title="RpcEnv"></a>RpcEnv</h3><p>作为rpc的环境 <code>RpcEndpoint</code> 注册到该对象上<br>通过 <code>new NettyRpcEnvFactory().create(config)</code> 创建具体的实现类<code>NettyRpcEnv</code></p>
+<hr>
+<h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><h3 id="1-StreamManager"><a href="#1-StreamManager" class="headerlink" title="1.StreamManager"></a>1.StreamManager</h3><p><code>NettyStreamManager</code> 用于提供NettyRpcEnv的文件流服务，可注册 文件、jar包和目录 三种资源，可以用来处理StreamRequest类型的消息</p>
+<hr>
+<h1 id="处理过程"><a href="#处理过程" class="headerlink" title="处理过程"></a>处理过程</h1><h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><p><img src="/images/spark/spark-server.png" alt="server处理流程图"><br>注册到netty 管道上的 NettyRpcHandler 投递消息到对应endpoints的inbox中 然后<br>dispatcher中的MessageLoop调用endpoint.receiveAndReply返回消息 </p>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><p><img src="/images/spark/spark-client.png" alt="client处理流程图"></p>
+<p><code>RpcEndpointRef</code>调用<code>NettyRpcEnv</code>中 send、ask 方法.<br>当请求地址与本地地址相同时，调用 Dispatcher.postLocalMessage，投递到对应的inbox中，dispatcher内部的线程池 调用endpoint做处理</p>
+<p>当请求地址与本地地址不同时，调用 postToOutbox 投递到对应的outbox 通过TransportClient 发送消息到远端</p>
 
       
     </div>
@@ -489,9 +488,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
+            <a href="/tags/spark/" rel="tag"><i class="fa fa-tag"></i> spark</a>
           
-            <a href="/tags/rocketmq/" rel="tag"><i class="fa fa-tag"></i> rocketmq</a>
+            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
           
         </div>
       
@@ -504,18 +503,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/19/Spark学习-RPC/" rel="next" title="Spark学习 RPC">
-                <i class="fa fa-chevron-left"></i> Spark学习 RPC
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/10/27/rocketmq-client/" rel="prev" title="RocketMQ 生产者">
-                RocketMQ 生产者 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/10/21/rocketmq-nameserver/" rel="prev" title="RocketMQ NameServer">
+                RocketMQ NameServer <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -691,7 +686,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#功能"><span class="nav-number">1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KVConfigManager"><span class="nav-number">2.1.</span> <span class="nav-text">KVConfigManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RouteInfoManager"><span class="nav-number">2.2.</span> <span class="nav-text">RouteInfoManager</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动流程"><span class="nav-number">3.</span> <span class="nav-text">启动流程</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#组件架构"><span class="nav-number">1.</span> <span class="nav-text">组件架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核心组件"><span class="nav-number">2.</span> <span class="nav-text">核心组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spark-network-common-部分"><span class="nav-number">2.1.</span> <span class="nav-text">spark-network-common 部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportContext"><span class="nav-number">2.1.1.</span> <span class="nav-text">TransportContext</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClientFactory"><span class="nav-number">2.1.2.</span> <span class="nav-text">TransportClientFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportServer"><span class="nav-number">2.1.3.</span> <span class="nav-text">TransportServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransportClient"><span class="nav-number">2.1.4.</span> <span class="nav-text">TransportClient</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spark-core-中RPC部分"><span class="nav-number">2.2.</span> <span class="nav-text">Spark-core 中RPC部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndpoint"><span class="nav-number">2.2.1.</span> <span class="nav-text">RpcEndpoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEndPointRef"><span class="nav-number">2.2.2.</span> <span class="nav-text">RpcEndPointRef</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RpcEnv"><span class="nav-number">2.2.3.</span> <span class="nav-text">RpcEnv</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">2.3.</span> <span class="nav-text">其他补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-StreamManager"><span class="nav-number">2.3.1.</span> <span class="nav-text">1.StreamManager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理过程"><span class="nav-number">3.</span> <span class="nav-text">处理过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Server"><span class="nav-number">3.1.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client"><span class="nav-number">3.2.</span> <span class="nav-text">Client</span></a></li></ol></li></ol></div>
             
 
           </div>

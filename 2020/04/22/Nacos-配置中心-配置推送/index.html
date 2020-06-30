@@ -96,18 +96,20 @@
 
 
 
-  <meta name="description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
-<meta name="keywords" content="源码学习,rocketmq">
+  <meta name="description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
+<meta name="keywords" content="nacos">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RocketMQ NameServer">
-<meta property="og:url" content="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/index.html">
+<meta property="og:title" content="Nacos 配置中心--配置推送">
+<meta property="og:url" content="http://wangweizZZ.github.io/2020/04/22/Nacos-配置中心-配置推送/index.html">
 <meta property="og:site_name" content="gagharv">
-<meta property="og:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
+<meta property="og:description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-27T09:17:14.102Z">
+<meta property="og:image" content="http://wangweizzz.github.io/images/nacos/nacos-1-1.png">
+<meta property="og:updated_time" content="2020-04-27T08:32:43.893Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RocketMQ NameServer">
-<meta name="twitter:description" content="功能 Brokers 定期更新metadata 提供客户端(包含生产者，消费者) 最新路由信息  组件 NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件  KVConfigManagerkv键值对管理 ,内部维护一个HashMap支持数据持久化到文件12HashMap&amp;l">
+<meta name="twitter:title" content="Nacos 配置中心--配置推送">
+<meta name="twitter:description" content="Nacos 配置推送配置获取Nacos 采取长轮询的方式定期获取配置变更 客户端如图，客户端 维护一个ClientWorker类定期（默认每隔10ms) 去服务端获取配置变更事件服务端获取到请求后将请求绑定到LongPollingService#allSubs上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果  服务端存在两种阻塞方式  当isFixedPolling=tru">
+<meta name="twitter:image" content="http://wangweizzz.github.io/images/nacos/nacos-1-1.png">
 
 
 
@@ -116,7 +118,7 @@
 
 
 
-  <link rel="canonical" href="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/">
+  <link rel="canonical" href="http://wangweizZZ.github.io/2020/04/22/Nacos-配置中心-配置推送/">
 
 
 
@@ -126,7 +128,7 @@
   };
 </script>
 
-  <title>RocketMQ NameServer | gagharv</title>
+  <title>Nacos 配置中心--配置推送 | gagharv</title>
   
 
 
@@ -325,7 +327,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2019/10/21/rocketmq-nameserver/">
+    <link itemprop="mainEntityOfPage" href="http://wangweizZZ.github.io/2020/04/22/Nacos-配置中心-配置推送/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wang wei">
@@ -342,7 +344,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">RocketMQ NameServer
+          <h1 class="post-title" itemprop="name headline">Nacos 配置中心--配置推送
 
               
             
@@ -368,7 +370,7 @@
                 
               
 
-              <time title="Created: 2019-10-21 09:48:37" itemprop="dateCreated datePublished" datetime="2019-10-21T09:48:37Z">2019-10-21</time>
+              <time title="Created: 2020-04-21 18:13:03" itemprop="dateCreated datePublished" datetime="2020-04-21T18:13:03Z">2020-04-21</time>
             
 
             
@@ -385,7 +387,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-27 09:17:14" itemprop="dateModified" datetime="2019-10-27T09:17:14Z">2019-10-27</time>
+                <time title="Modified: 2020-04-27 08:32:43" itemprop="dateModified" datetime="2020-04-27T08:32:43Z">2020-04-27</time>
               
             
           </span>
@@ -402,7 +404,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/消息队列/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/云原生/" itemprop="url" rel="index"><span itemprop="name">云原生</span></a></span>
 
                 
                 
@@ -437,35 +439,21 @@
       
 
       
-        <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ol>
-<li>Brokers 定期更新metadata</li>
-<li>提供客户端(包含生产者，消费者) 最新路由信息</li>
-</ol>
-<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><blockquote>
-<p>NamesrvController 包含 KVConfigManager、RouteInfoManager、NamesrvConfig、NettyServerConfig等组件</p>
-</blockquote>
-<h3 id="KVConfigManager"><a href="#KVConfigManager" class="headerlink" title="KVConfigManager"></a>KVConfigManager</h3><p>kv键值对管理 ,内部维护一个HashMap支持数据持久化到文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String<span class="comment">/* Namespace */</span>, HashMap&lt;String<span class="comment">/* Key */</span>, String<span class="comment">/* Value */</span>&gt;&gt; configTable =</span><br><span class="line">    <span class="keyword">new</span> HashMap&lt;String, HashMap&lt;String, String&gt;&gt;();</span><br></pre></td></tr></table></figure></p>
-<h3 id="RouteInfoManager"><a href="#RouteInfoManager" class="headerlink" title="RouteInfoManager"></a>RouteInfoManager</h3><p>存储broker列表，topic信息，通过注册<code>BrokerHousekeepingService</code>到netty 处理链上处理对应连接关闭、Idle事件</p>
-<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><blockquote>
-<p>NamesrvStartup.main()</p>
-</blockquote>
-<ol>
-<li>创建 NamesrvController ，传入 NamesrvConfig、NettyServerConfig</li>
-<li>controller.initialize() <ul>
-<li>kvConfigManager 加载配置</li>
-<li>NettyRemotingServer 初始化</li>
-<li>注册netty处理逻辑</li>
-<li>开启间隔10s的定时任务 调用<code>routeInfoManager</code>扫描不可用的broker 关闭channel</li>
-<li>开启间隔10s的定时任务 调用<code>kvConfigManager</code>打印配置信息</li>
-<li>ssl模式下对文件ssl文件监控，变化则调用<code>reloadServerSslContext()</code>刷新Sslcontext</li>
+        <h2 id="Nacos-配置推送"><a href="#Nacos-配置推送" class="headerlink" title="Nacos 配置推送"></a>Nacos 配置推送</h2><h3 id="配置获取"><a href="#配置获取" class="headerlink" title="配置获取"></a>配置获取</h3><p><strong>Nacos 采取长轮询的方式定期获取配置变更</strong></p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p><img src="/images/nacos/nacos-1-1.png" alt="nacos"><br>如图，客户端 维护一个<code>ClientWorker</code>类定期（默认每隔10ms) 去服务端获取配置变更事件<br>服务端获取到请求后将请求绑定到<code>LongPollingService#allSubs</code>上，如果发生数据变更事件后检查allSubs即可获取客户端列表并返回结果</p>
+<blockquote>
+<p>服务端存在两种阻塞方式</p>
+<ul>
+<li>当isFixedPolling=true时，服务端始终等超时执行asyncTimeoutFuture进行数据检查并返回变更数据</li>
+<li>当isFixedPolling=false时(默认），服务端一旦配置变更，立即触发数据变更，并取消asyncTimeoutFuture</li>
 </ul>
-</li>
-<li>controller.start()<ul>
-<li><code>NettyRemotingServer</code> start()</li>
-<li>ssl模式文件监控开启</li>
-</ul>
-</li>
-</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClientLongPolling</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">       <span class="meta">@Override</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">           asyncTimeoutFuture = scheduler.schedule(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">               <span class="meta">@Override</span></span><br><span class="line">               <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                   <span class="keyword">try</span> &#123;</span><br><span class="line">                       ...</span><br><span class="line">                       <span class="comment">//移除订阅关系</span></span><br><span class="line">                       allSubs.remove(ClientLongPolling.<span class="keyword">this</span>);</span><br><span class="line">                       <span class="comment">//如果是固定轮询，则即便时间内收到配置变更也不返回，又该future到时间统一检查数据是否变更</span></span><br><span class="line">                       <span class="keyword">if</span> (isFixedPolling()) &#123;</span><br><span class="line">                           ...</span><br><span class="line">                           <span class="keyword">if</span> (changedGroups.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                               sendResponse(changedGroups);</span><br><span class="line">                           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                               sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                           &#125;</span><br><span class="line">                       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                          ...</span><br><span class="line">                          <span class="comment">//非固定轮询，由配置变更事件返回变更，此处超时不检查数据是否变更</span></span><br><span class="line">                           sendResponse(<span class="keyword">null</span>);</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                      ...</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">           <span class="comment">//绑定到allSubs上</span></span><br><span class="line">           allSubs.add(<span class="keyword">this</span>);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端接收到配置修改的请求，写入数据库而后触发<code>ConfigDataChangeEvent</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1. 写入数据库</span></span><br><span class="line">persistService.insertOrUpdate(srcIp, srcUser, configInfo, time, configAdvanceInfo, <span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//2. 触发 ConfigDataChangeEvent</span></span><br><span class="line">EventDispatcher.fireEvent(<span class="keyword">new</span> ConfigDataChangeEvent(<span class="keyword">false</span>, dataId, group, tenant, time.getTime()));</span><br></pre></td></tr></table></figure></p>
+<p>AsyncNotifyService 订阅了<code>ConfigDataChangeEvent</code>事件，依次向所有服务端发送数据库变更事件，促使所有服务端从mysql更新数据，并检查各自<code>allSubs</code>连接的客户端，返回response<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (event <span class="keyword">instanceof</span> ConfigDataChangeEvent) &#123;</span><br><span class="line">    ConfigDataChangeEvent evt = (ConfigDataChangeEvent) event;</span><br><span class="line">    ...</span><br><span class="line">    Queue&lt;NotifySingleTask&gt; queue = <span class="keyword">new</span> LinkedList&lt;NotifySingleTask&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ipList.size(); i++) &#123;</span><br><span class="line">        queue.add(<span class="keyword">new</span> NotifySingleTask(dataId, group, tenant, tag, dumpTs, (String) ipList.get(i), evt.isBeta));</span><br><span class="line">    &#125;</span><br><span class="line">    EXECUTOR.execute(<span class="keyword">new</span> AsyncTask(httpclient, queue));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>综上: 客户端定期轮询拉取等待返回结果，服务端在轮询周期内等待数据变更事件，如发生则立刻返回已达到配置变更后尽快获取到配置变更的效果</p>
+</blockquote>
 
       
     </div>
@@ -489,9 +477,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/源码学习/" rel="tag"><i class="fa fa-tag"></i> 源码学习</a>
-          
-            <a href="/tags/rocketmq/" rel="tag"><i class="fa fa-tag"></i> rocketmq</a>
+            <a href="/tags/nacos/" rel="tag"><i class="fa fa-tag"></i> nacos</a>
           
         </div>
       
@@ -504,8 +490,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/19/Spark学习-RPC/" rel="next" title="Spark学习 RPC">
-                <i class="fa fa-chevron-left"></i> Spark学习 RPC
+              <a href="/2020/04/20/Nacos-配置中心-服务启动/" rel="next" title="Nacos 配置中心--服务启动">
+                <i class="fa fa-chevron-left"></i> Nacos 配置中心--服务启动
               </a>
             
           </div>
@@ -514,8 +500,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/10/27/rocketmq-client/" rel="prev" title="RocketMQ 生产者">
-                RocketMQ 生产者 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/04/28/Nacos-配置中心-逻辑架构/" rel="prev" title="Nacos 配置中心-逻辑架构">
+                Nacos 配置中心-逻辑架构 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -691,7 +677,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#功能"><span class="nav-number">1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">2.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KVConfigManager"><span class="nav-number">2.1.</span> <span class="nav-text">KVConfigManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RouteInfoManager"><span class="nav-number">2.2.</span> <span class="nav-text">RouteInfoManager</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动流程"><span class="nav-number">3.</span> <span class="nav-text">启动流程</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nacos-配置推送"><span class="nav-number">1.</span> <span class="nav-text">Nacos 配置推送</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置获取"><span class="nav-number">1.1.</span> <span class="nav-text">配置获取</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端"><span class="nav-number">1.1.1.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端"><span class="nav-number">1.1.2.</span> <span class="nav-text">服务端</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
